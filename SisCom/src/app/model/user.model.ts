@@ -11,4 +11,5 @@ export interface User {
     createdAt: Date;        // Importante para auditoria
     phone?: string;         // Opcional, mas comum em órgãos públicos para contatos rápidos
     isManager: boolean;
+    managedDepartment?: Department
 }
