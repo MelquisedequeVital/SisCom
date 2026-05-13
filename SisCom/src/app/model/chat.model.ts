@@ -6,6 +6,6 @@ export interface Chat {
     id: string;
     messages: Message[]
     subject:string;
-    participants: [User,User];
+    participants: User[];
     lastMessage?: Message; // Útil para mostrar o resumo na lista de conversas
 }
