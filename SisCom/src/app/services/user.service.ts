@@ -25,7 +25,7 @@ export class UserService {
     }
   }
 
-  async createUser(user: User) {
+  async addUser(user: User) {
     try {
       const newUser = await firstValueFrom(this.http.post<User>(this.apiUrl, user));
       this.usersSignal.update(oldUsers => [...oldUsers, newUser]);
