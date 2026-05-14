@@ -1,77 +1,25 @@
-import { http, HttpResponse, PathParams } from 'msw';
-import { User } from '../app/models/user.model';
+import * as handleFactory from './handler-factory';
 
 const BASE_URL = 'http://localhost:4200';
 const urlUsers = `${BASE_URL}/api/users`;
 const DB_USER_KEY = 'users';
-
-const getStoredUsers = (dbKey: string) => {
-    const data = localStorage.getItem(dbKey);
-    return data ? JSON.parse(data) : [];
-};
+const urlChats = `${BASE_URL}/api/chats`;
+const DB_CHAT_KEY = 'chats';
 
 export const handlers = [
 
     // Comandos HTTP para  /api/users
+    handleFactory.Get(urlUsers, DB_USER_KEY),
+    handleFactory.GetById(urlUsers, DB_USER_KEY),
+    handleFactory.Post(urlUsers, DB_USER_KEY),
+    handleFactory.Put(urlUsers, DB_USER_KEY),
+    handleFactory.Delete(urlUsers, DB_USER_KEY),
 
-    http.get(urlUsers, () => {
-        const users = getStoredUsers(DB_USER_KEY);
-        return HttpResponse.json(users)
-    }),
+    // Comandos HTTP para  /api/chats
+    handleFactory.Get(urlChats, DB_CHAT_KEY),
+    handleFactory.GetById(urlChats, DB_CHAT_KEY),
+    handleFactory.Post(urlChats, DB_CHAT_KEY),
+    handleFactory.Put(urlChats, DB_CHAT_KEY),
+    handleFactory.Delete(urlChats, DB_CHAT_KEY),
 
-    http.get<{ id: string }>(`${urlUsers}/:id`, ({ params }) => {
-        const { id } = params;
-        const users: User[] = getStoredUsers(DB_USER_KEY);
-        const user = users.find(u => u.id === id);
-
-        if (!user) {
-            return HttpResponse.json({ message: 'Não encontrado' }, { status: 404 });
-        }
-        return HttpResponse.json(user);
-    }),
-
-    http.post(urlUsers, async ({ request }) => {
-        const newUser = (await request.json()) as User;
-        const users = getStoredUsers(DB_USER_KEY);
-        users.push(newUser);
-
-        localStorage.setItem(DB_USER_KEY, JSON.stringify(users));
-
-        return HttpResponse.json(newUser, { status: 201 });
-    }),
-
-    http.delete<{ id: string }>(`${urlUsers}/:id`, ({ params }) => {
-        const { id } = params;
-        let users: User[] = getStoredUsers(DB_USER_KEY);
-
-        const userExists = users.some(u => u.id === id);
-        if (!userExists) {
-            return HttpResponse.json({ message: 'Usuário não encontrado' }, { status: 404 });
-        }
-
-        users = users.filter(u => u.id !== id);
-        localStorage.setItem(DB_USER_KEY, JSON.stringify(users));
-
-        return new HttpResponse(null, { status: 204 });
-    }),
-
-    http.put<{ id: string }>(`${urlUsers}/:id`, async ({ params, request }) => {
-        const id = params['id'] as string;
-        const updatedData = (await request.json()) as User;
-
-        let users: User[] = getStoredUsers(DB_USER_KEY);
-        const index = users.findIndex(u => u.id === id);
-
-        if (index === -1) {
-            return HttpResponse.json(
-                { message: 'Usuário não localizado no sistema SisCom' },
-                { status: 404 }
-            );
-        }
-
-        users[index] = { ...users[index], ...updatedData, id };
-        localStorage.setItem(DB_USER_KEY, JSON.stringify(users));
-
-        return HttpResponse.json(users[index], { status: 200 });
-    })
 ]
