@@ -9,7 +9,10 @@ async function prepareApp(){
   if(isDevMode()) {
     const { worker } = await import("./mocks/browser")
     return worker.start({
-      onUnhandledRequest: 'bypass' // Evita avisos de requisições internas do Angular
+      onUnhandledRequest: 'bypass', // Evita avisos de requisições internas do Angular
+      serviceWorker: {
+        url: '/mockServiceWorker.js'
+      }
     })
   }
 
