@@ -19,6 +19,17 @@ export const handlers = [
         return HttpResponse.json(users)
     }),
 
+    http.get<{ id: string }>(`${urlUsers}/:id`, ({ params }) => {
+        const { id } = params;
+        const users: User[] = getStoredUsers(urlUsers);
+        const user = users.find(u => u.id === id);
+
+        if (!user) {
+            return HttpResponse.json({ message: 'Não encontrado' }, { status: 404 });
+        }
+        return HttpResponse.json(user);
+    }),
+
     http.post(urlUsers, async ({ request }) => {
         const newUser = (await request.json()) as User;
         const users = getStoredUsers(urlUsers);
@@ -29,27 +40,27 @@ export const handlers = [
         return HttpResponse.json(newUser, { status: 201 });
     }),
 
-    http.delete(`${urlUsers}/:id`, ({ params }) => {
+    http.delete<{ id: string }>(`${urlUsers}/:id`, ({ params }) => {
         const { id } = params;
-        let users = getStoredUsers(urlUsers);
+        let users: User[] = getStoredUsers(urlUsers);
 
-        const userExists = users.some((u: User) => u.id === id);
+        const userExists = users.some(u => u.id === id);
         if (!userExists) {
             return HttpResponse.json({ message: 'Usuário não encontrado' }, { status: 404 });
         }
 
-        users = users.filter((u: User) => u.id !== id);
+        users = users.filter(u => u.id !== id);
         localStorage.setItem(urlUsers, JSON.stringify(users));
 
         return new HttpResponse(null, { status: 204 });
     }),
 
-    http.put(`${urlUsers}/:id`, async ({ params, request }) => {
+    http.put<{ id: string }>(`${urlUsers}/:id`, async ({ params, request }) => {
         const id = params['id'] as string;
         const updatedData = (await request.json()) as User;
 
-        let users = getStoredUsers(urlUsers);
-        const index = users.findIndex((u: User) => u.id === id);
+        let users: User[] = getStoredUsers(urlUsers);
+        const index = users.findIndex(u => u.id === id);
 
         if (index === -1) {
             return HttpResponse.json(
@@ -57,7 +68,7 @@ export const handlers = [
                 { status: 404 }
             );
         }
-        
+
         users[index] = { ...users[index], ...updatedData, id };
         localStorage.setItem(urlUsers, JSON.stringify(users));
 
