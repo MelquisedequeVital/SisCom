@@ -7,7 +7,7 @@ import { firstValueFrom } from 'rxjs';
 })
 export class UserService {
   private http = inject(HttpClient);
-  private readonly apiUrl = '/api/users';
+  private readonly apiUrl = 'http://localhost:4200/api/users';
 
   private usersSignal = signal<User[]>([]);
   public users = this.usersSignal.asReadonly();

@@ -1,7 +1,9 @@
 import { http, HttpResponse, PathParams } from 'msw';
 import { User } from '../app/models/user.model';
 
-const urlUsers = '/api/users';
+const BASE_URL = 'http://localhost:4200';
+const urlUsers = `${BASE_URL}/api/users`;
+const DB_USER_KEY = 'users';
 
 const getStoredUsers = (dbKey: string) => {
     const data = localStorage.getItem(dbKey);
@@ -10,18 +12,16 @@ const getStoredUsers = (dbKey: string) => {
 
 export const handlers = [
 
-
-
     // Comandos HTTP para  /api/users
 
     http.get(urlUsers, () => {
-        const users = getStoredUsers(urlUsers);
+        const users = getStoredUsers(DB_USER_KEY);
         return HttpResponse.json(users)
     }),
 
     http.get<{ id: string }>(`${urlUsers}/:id`, ({ params }) => {
         const { id } = params;
-        const users: User[] = getStoredUsers(urlUsers);
+        const users: User[] = getStoredUsers(DB_USER_KEY);
         const user = users.find(u => u.id === id);
 
         if (!user) {
@@ -32,17 +32,17 @@ export const handlers = [
 
     http.post(urlUsers, async ({ request }) => {
         const newUser = (await request.json()) as User;
-        const users = getStoredUsers(urlUsers);
+        const users = getStoredUsers(DB_USER_KEY);
         users.push(newUser);
 
-        localStorage.setItem('users', JSON.stringify(users));
+        localStorage.setItem(DB_USER_KEY, JSON.stringify(users));
 
         return HttpResponse.json(newUser, { status: 201 });
     }),
 
     http.delete<{ id: string }>(`${urlUsers}/:id`, ({ params }) => {
         const { id } = params;
-        let users: User[] = getStoredUsers(urlUsers);
+        let users: User[] = getStoredUsers(DB_USER_KEY);
 
         const userExists = users.some(u => u.id === id);
         if (!userExists) {
@@ -50,7 +50,7 @@ export const handlers = [
         }
 
         users = users.filter(u => u.id !== id);
-        localStorage.setItem(urlUsers, JSON.stringify(users));
+        localStorage.setItem(DB_USER_KEY, JSON.stringify(users));
 
         return new HttpResponse(null, { status: 204 });
     }),
@@ -59,7 +59,7 @@ export const handlers = [
         const id = params['id'] as string;
         const updatedData = (await request.json()) as User;
 
-        let users: User[] = getStoredUsers(urlUsers);
+        let users: User[] = getStoredUsers(DB_USER_KEY);
         const index = users.findIndex(u => u.id === id);
 
         if (index === -1) {
@@ -70,7 +70,7 @@ export const handlers = [
         }
 
         users[index] = { ...users[index], ...updatedData, id };
-        localStorage.setItem(urlUsers, JSON.stringify(users));
+        localStorage.setItem(DB_USER_KEY, JSON.stringify(users));
 
         return HttpResponse.json(users[index], { status: 200 });
     })
