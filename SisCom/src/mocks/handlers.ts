@@ -5,6 +5,8 @@ const urlUsers = `${BASE_URL}/api/users`;
 const DB_USER_KEY = 'users';
 const urlChats = `${BASE_URL}/api/chats`;
 const DB_CHAT_KEY = 'chats';
+const urlMeetings = `${BASE_URL}/api/meetings`;
+const DB_MEETING_KEY = 'meetings';
 
 export const handlers = [
 
@@ -21,5 +23,12 @@ export const handlers = [
     handleFactory.Post(urlChats, DB_CHAT_KEY),
     handleFactory.Put(urlChats, DB_CHAT_KEY),
     handleFactory.Delete(urlChats, DB_CHAT_KEY),
+    
+    // Comandos HTTP para  /api/meetings
+    handleFactory.Get(urlMeetings, DB_MEETING_KEY),
+    handleFactory.GetById(urlMeetings, DB_MEETING_KEY),
+    handleFactory.Post(urlMeetings, DB_MEETING_KEY),
+    handleFactory.Put(urlMeetings, DB_MEETING_KEY),
+    handleFactory.Delete(urlMeetings, DB_MEETING_KEY),
 
 ]
