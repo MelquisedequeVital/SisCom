@@ -28,7 +28,7 @@ export class ChatService {
     }
   }
 
-  async addChat(chat: Chat) {
+  async addChat(chat: Omit<Chat, 'id'>) {
     try {
       const newChat = await firstValueFrom(this.http.post<Chat>(this.apiUrl, chat));
       this.chatsSignal.update(oldChats => [...oldChats, newChat]);
@@ -51,8 +51,7 @@ export class ChatService {
 
   async addMessage(id: string, text: string, senderId: string) {
 
-    const message: Message = {
-      id: crypto.randomUUID(), // Gera o ID aqui
+    const message: Omit<Message, 'id'> = {
       content: text,
       senderID: senderId,
       timestamp: new Date(),

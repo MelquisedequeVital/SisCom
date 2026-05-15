@@ -26,7 +26,7 @@ export class MeetingService {
     }
   }
 
-  async scheduleMeeting(meeting: Meeting) {
+  async scheduleMeeting(meeting: Omit<Meeting, 'id'>) {
     try {
       const newMeeting = await firstValueFrom(this.http.post<Meeting>(this.apiUrl, meeting));
       this.meetingsSignal.update(meetings => [...meetings, newMeeting]);

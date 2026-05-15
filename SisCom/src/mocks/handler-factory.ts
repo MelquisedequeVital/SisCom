@@ -17,13 +17,18 @@ export const GetById = <T extends { id: string | number }>(url: string, dbKey: s
         return item ? HttpResponse.json(item) : HttpResponse.json({ message: 'Not Found' }, { status: 404 });
     });
 
-export const Post = <T extends JsonBodyType>(url: string, dbKey: string) =>
+export const Post = <T extends { id?: string | number }>(url: string, dbKey: string) =>
     http.post(url, async ({ request }) => {
         const newItem = (await request.json()) as T;
+        const itemWithId = {
+            ...newItem,
+            id: newItem.id || crypto.randomUUID()
+        };
         const data = db.get<T>(dbKey);
-        data.push(newItem);
+        data.push(itemWithId as T);
         db.set(dbKey, data);
-        return HttpResponse.json(newItem, { status: 201 });
+
+        return HttpResponse.json(itemWithId, { status: 201 });
     });
 
 export const Put = <T extends { id: string | number }>(url: string, dbKey: string) =>
