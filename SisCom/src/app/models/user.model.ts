@@ -12,5 +12,6 @@ export interface User {
     phone?: string;         // Opcional, mas comum em órgãos públicos para contatos rápidos
     isManager: boolean;
     managedDepartment?: Department;
-    chats: string[]
+    chats: string[];
+    urgency: 'low' | 'moderate' | 'high'
 }

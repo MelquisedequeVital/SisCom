@@ -2,8 +2,7 @@ import { bootstrapApplication } from '@angular/platform-browser';
 import { appConfig } from './app/app.config';
 import { App } from './app/app';
 import { isDevMode } from '@angular/core';
-import { worker } from './mocks/browser';
-import { retry } from 'rxjs';
+
 
 async function prepareApp(){
   if(isDevMode()) {
