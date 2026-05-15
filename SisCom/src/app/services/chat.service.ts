@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { inject, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { Chat } from '../models/chat.model';
 import { firstValueFrom } from 'rxjs';
 import { Message } from '../models/message.model';
@@ -13,6 +13,7 @@ export class ChatService {
 
   private chatsSignal = signal<Chat[]>([]);
   public chats = this.chatsSignal.asReadonly();
+
 
   constructor() {
     this.loadChats();
@@ -37,8 +38,19 @@ export class ChatService {
     }
   }
 
+  async removeChat(chatId: string) {
+    try {
+      await firstValueFrom(this.http.delete(`${this.apiUrl}/${chatId}`));
+      this.chatsSignal.update(chats => chats.filter(c => c.id !== chatId));
+    } catch (error) {
+      console.error('Erro ao remover chat no SisCom:', error);
+      throw error
+    }
+
+  }
+
   async addMessage(id: string, text: string, senderId: string) {
-    
+
     const message: Message = {
       id: crypto.randomUUID(), // Gera o ID aqui
       content: text,
@@ -77,6 +89,30 @@ export class ChatService {
       return await firstValueFrom(this.http.get<Chat>(`${this.apiUrl}/${id}`));
     } catch (error) {
       return undefined;
+    }
+  }
+
+  async markAllAsRead(chatId: string) {
+    try {
+
+      const chat = this.chatsSignal().find(c => c.id === chatId);
+      if (!chat) return;
+
+      const updatedChatData = {
+        ...chat,
+        messages: chat.messages.map(msg => ({ ...msg, isRead: true }))
+      };
+
+      const serverResponse = await firstValueFrom(
+        this.http.put<Chat>(`${this.apiUrl}/${chatId}`, updatedChatData)
+      );
+
+      this.chatsSignal.update(chats =>
+        chats.map(c => c.id === chatId ? serverResponse : c)
+      );
+
+    } catch (error) {
+      console.error('Falha ao marcar mensagem como lida no SisCom:', error);
     }
   }
 
