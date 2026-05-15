@@ -31,6 +31,7 @@ export class UserService {
       this.usersSignal.update(oldUsers => [...oldUsers, newUser]);
       return newUser;
     } catch (error) {
+      console.error("Erro ao adicionar usuário: ", error);
       throw error
     }
   }
@@ -43,6 +44,7 @@ export class UserService {
       )
     } catch (error) {
       console.error('Erro ao atualizar usuário no SisCom:', error);
+      throw error
     }
   }
 
@@ -53,7 +55,8 @@ export class UserService {
         users.filter(u => u.id !== id)
       );
     } catch (error) {
-      throw console.error("Erro ao deletar usuário: ", error);
+      console.error("Erro ao deletar usuário: ", error);
+      throw error
     }
   }
 
