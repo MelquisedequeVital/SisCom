@@ -77,6 +77,7 @@ export class ChatService {
 
     } catch (error) {
       console.error('Erro ao adicionar mensagem no chat:', error);
+      throw error
     }
   }
 

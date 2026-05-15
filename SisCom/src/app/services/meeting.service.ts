@@ -39,7 +39,12 @@ export class MeetingService {
 
   async updateMeeting(id: string, meetingData: Partial<Meeting>) {
     try {
-      const updatedMeeting = await firstValueFrom(this.http.put<Meeting>(`${this.apiUrl}/${id}`, meetingData));
+      const current = this.meetingsSignal().find(m => m.id === id);
+      
+      if (!current) return;
+      const fullUpdatedData = { ...current, ...meetingData };
+      
+      const updatedMeeting = await firstValueFrom(this.http.put<Meeting>(`${this.apiUrl}/${id}`, fullUpdatedData));
       this.meetingsSignal.update(meeting =>
         meeting.map(m => m.id === id ? updatedMeeting : m)
       )

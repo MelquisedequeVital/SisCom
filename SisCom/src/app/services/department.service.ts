@@ -47,9 +47,11 @@ export class DepartmentService {
     }
   }
 
-  async updateDepartment(deptId: string, changedDept: Omit<Department, 'id'>){
+  async updateDepartment(deptId: string, changedDept: Partial<Department>){
     try{
-      const updatedDepartment = await firstValueFrom(this.http.put<Department>(`${this.API_URL}/${deptId}`, changedDept ));
+      const current = this.departmentsSignal().find(dept => dept.id === deptId);
+      const fullUpdatedData = {...current, ...changedDept};
+      const updatedDepartment = await firstValueFrom(this.http.put<Department>(`${this.API_URL}/${deptId}`, fullUpdatedData ));
       this.departmentsSignal.update(depts => 
         depts.map(dept => dept.id === deptId ? updatedDepartment : dept)
       )

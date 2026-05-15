@@ -38,7 +38,7 @@ export const handlers = [
     handleFactory.Put(urlMeetings, DB_MEETING_KEY),
     handleFactory.Delete(urlMeetings, DB_MEETING_KEY),
 
-    // Comandos HTTP para  /api/meetings
+    // Comandos HTTP para  /api/departments
     handleFactory.Get(urlDepartments, DB_DEPARTMENT_KEY),
     handleFactory.GetById(urlDepartments, DB_DEPARTMENT_KEY),
     handleFactory.Post(urlDepartments, DB_DEPARTMENT_KEY),

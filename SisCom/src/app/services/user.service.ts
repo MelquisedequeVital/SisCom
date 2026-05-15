@@ -38,7 +38,10 @@ export class UserService {
 
   async updateUser(id: string, userData: Partial<User>) {
     try {
-      const updatedUser = await firstValueFrom(this.http.put<User>(`${this.apiUrl}/${id}`, userData));
+      const current = this.usersSignal().find(u => u.id == id);
+      const fullUpdatedData = {...current, ...userData};
+
+      const updatedUser = await firstValueFrom(this.http.put<User>(`${this.apiUrl}/${id}`, fullUpdatedData));
       this.usersSignal.update(users =>
         users.map(u => u.id === id ? updatedUser : u)
       )
