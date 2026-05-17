@@ -8,4 +8,5 @@ export interface Chat {
     subject:string;
     participants: User[];
     lastMessage?: Message; // Útil para mostrar o resumo na lista de conversas
+    urgency: 'low' | 'moderate' | 'high'
 }

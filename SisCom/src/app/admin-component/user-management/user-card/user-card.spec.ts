@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { HeaderAdminComponent } from './header-admin.component';
+import { UserCard } from './user-card';
 
-describe('HeaderAdminComponent', () => {
-  let component: HeaderAdminComponent;
-  let fixture: ComponentFixture<HeaderAdminComponent>;
+describe('UserCard', () => {
+  let component: UserCard;
+  let fixture: ComponentFixture<UserCard>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HeaderAdminComponent],
+      imports: [UserCard],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(HeaderAdminComponent);
+    fixture = TestBed.createComponent(UserCard);
     component = fixture.componentInstance;
     await fixture.whenStable();
   });

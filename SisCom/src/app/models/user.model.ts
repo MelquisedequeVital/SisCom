@@ -13,5 +13,5 @@ export interface User {
     isManager: boolean;
     managedDepartment?: Department;
     chats: string[];
-    urgency: 'low' | 'moderate' | 'high'
+    
 }
