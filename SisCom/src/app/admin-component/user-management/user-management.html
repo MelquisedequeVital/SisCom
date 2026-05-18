@@ -8,7 +8,7 @@
         </div>
 
         <button
-            class="h-10 px-4 bg-[#002B93] hover:bg-[#002271] text-white font-medium rounded-lg text-sm flex items-center gap-2 shadow-sm transition-colors shrink-0">
+            class="h-10 px-4 bg-[#002B93] hover:bg-[#002271] text-white font-medium rounded-lg text-sm flex items-center gap-2 shadow-sm transition-colors shrink-0" (click)="abrirModalCadastro()">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
             </svg>
@@ -32,3 +32,12 @@
     </div>
 
 </div>
+
+@if (isModalOpen()) {
+<app-user-modal 
+    [userToEdit]="userToEdit()" 
+    [departments]="departmentsList()" 
+    (onClose)="fecharModal()"
+    (onSave)="gravarDados($event)">
+</app-user-modal>
+}

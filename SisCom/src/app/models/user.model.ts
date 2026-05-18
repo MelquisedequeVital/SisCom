@@ -5,7 +5,7 @@ export interface User {
     name: string;
     department: Department;
     email: string;
-    password?: string;
+    password: string;
     isAdmin: boolean;
     active: boolean;        // Útil em órgãos públicos para usuários afastados/desativados
     createdAt: Date;        // Importante para auditoria
