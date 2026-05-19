@@ -1,0 +1,54 @@
+<div class="siscom-container">
+    <header class="siscom-header">
+    <div class="logo-area">
+        <span class="logo-icon">💬</span>
+        <h1>SisCom</h1>
+    </div>
+    <nav class="nav-links">
+        <a (click)="navegar('conversas')">Conversas</a>
+        <a (click)="navegar('nova-solicitacao')" class="active">Nova Solicitação</a>
+    </nav>
+    </header>
+
+    <main class="form-card">
+    <h2>Criar Nova Solicitação de Comunicação</h2>
+    <p class="subtitle">Informe o motivo e a urgência para iniciar um novo chamado.</p>
+
+    <form [formGroup]="form" (ngSubmit)="enviarSolicitacao()">
+          
+        <div class="form-group">
+        <label for="motivo">Motivo da Comunicação</label>
+        <textarea 
+            id="motivo" 
+            formControlName="motivo" 
+            placeholder="Descreva detalhadamente o motivo do contato..."
+            rows="5">
+        </textarea>
+        @if (form.get('motivo')?.touched && form.get('motivo')?.invalid) {
+            <span class="error-msg">O motivo é obrigatório e precisa ter pelo menos 10 caracteres.</span>
+        }
+        </div>
+
+        <div class="form-group">
+        <label for="urgencia">Grau de Urgência</label>
+        <select id="urgencia" formControlName="urgencia">
+            <option value="baixa">Baixa (Informativo / Rotina)</option>
+            <option value="media">Média (Requer atenção no mesmo dia)</option>
+            <option value="alta">Alta (Resolução imediata necessária)</option>
+        </select>
+        </div>
+
+        <div class="actions">
+        <button type="button" class="btn-cancelar" (click)="navegar('conversas')">Cancelar</button>
+            
+        <button type="submit" class="btn-enviar" [disabled]="form.invalid || enviando()">
+            @if (enviando()) {
+            <span>Enviando...</span>
+            } @else {
+            <span>Enviar Solicitação</span>
+            }
+        </button>
+        </div>
+    </form>
+    </main>
+</div>

@@ -1,0 +1,147 @@
+/* src/app/components/form/form.css */
+.siscom-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Header e Navegação */
+.siscom-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.logo-area {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-area h1 { 
+  font-size: 24px; 
+  margin: 0; 
+  font-weight: 700; 
+  color: var(--accent-green); 
+}
+
+.nav-links { 
+  display: flex; 
+  gap: 20px; 
+}
+
+.nav-links a { 
+  color: var(--text-secondary); 
+  cursor: pointer; 
+  text-decoration: none; 
+  font-weight: 500; 
+  transition: color 0.2s; 
+}
+
+.nav-links a:hover, .nav-links a.active { 
+  color: var(--accent-green); 
+}
+
+/* Card do Formulário */
+.form-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 40px;
+  margin-top: 40px;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+h2 { 
+  margin-top: 0; 
+  font-size: 22px; 
+}
+
+.subtitle { 
+  color: var(--text-secondary); 
+  margin-bottom: 30px; 
+  font-size: 14px; 
+}
+
+/* Inputs e Labels */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+label { 
+  font-size: 14px; 
+  font-weight: 600; 
+  color: var(--text-secondary); 
+}
+
+textarea, select {
+  background-color: var(--bg-input);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 12px;
+  color: var(--text-primary);
+  font-size: 15px;
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+textarea:focus, select:focus { 
+  border-color: var(--accent-green); 
+}
+
+.error-msg { 
+  color: #FF5252; 
+  font-size: 12px; 
+  margin-top: 4px; 
+}
+
+/* Botões */
+.actions { 
+  display: flex; 
+  justify-content: flex-end; 
+  gap: 16px; 
+  margin-top: 32px; 
+}
+
+button { 
+  padding: 12px 24px; 
+  border-radius: 6px; 
+  font-weight: 600; 
+  cursor: pointer; 
+  border: none; 
+  font-size: 15px; 
+  transition: all 0.2s; 
+}
+
+.btn-cancelar { 
+  background-color: transparent; 
+  color: var(--text-secondary); 
+  border: 1px solid var(--border-color); 
+}
+
+.btn-cancelar:hover { 
+  background-color: rgba(255, 255, 255, 0.05); 
+  color: var(--text-primary); 
+}
+
+.btn-enviar { 
+  background-color: var(--accent-green); 
+  color: #000000; 
+}
+
+.btn-enviar:hover:not(:disabled) { 
+  background-color: var(--accent-green-hover); 
+}
+
+.btn-enviar:disabled { 
+  opacity: 0.5; 
+  cursor: not-allowed; 
+}
