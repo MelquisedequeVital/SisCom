@@ -1,0 +1,153 @@
+<div class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 animate-fadeIn">
+
+    <div
+        class="bg-white w-full max-w-lg rounded-2xl shadow-xl border border-gray-100 flex flex-col overflow-hidden max-h-[90vh]">
+
+        <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+            <h3 class="text-base font-bold text-gray-900">
+                {{ isEditing() ? 'Editar Usuário' : 'Cadastrar Novo Usuário' }}
+            </h3>
+            <button (click)="onClose.emit()"
+                class="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+
+        <form [formGroup]="userForm" (ngSubmit)="salvar()" class="flex-1 overflow-y-auto p-6 flex flex-col gap-4">
+
+            <div class="flex flex-col gap-1">
+                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wide">Nome Completo</label>
+                <input type="text" formControlName="name" placeholder="Ex: João Silva"
+                    [class.border-red-500]="userForm.get('name')?.invalid && userForm.get('name')?.touched"
+                    class="h-10 px-3 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-800 focus:outline-none focus:border-[#002B93] focus:bg-white transition-colors" />
+
+                @if (userForm.get('name')?.invalid && userForm.get('name')?.touched) {
+                @if (userForm.get('name')?.hasError('required')) {
+                <span class="text-red-500 text-[10px] font-medium">O nome é obrigatório.</span>
+                }
+                @if (userForm.get('name')?.hasError('minlength')) {
+                <span class="text-red-500 text-[10px] font-medium">O nome deve ter no mínimo 3 caracteres.</span>
+                }
+                }
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div class="flex flex-col gap-1">
+                    <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wide">E-mail
+                        Institucional</label>
+                    <input type="email" formControlName="email" placeholder="nome@sistema.com"
+                        [class.border-red-500]="userForm.get('email')?.invalid && userForm.get('email')?.touched"
+                        class="h-10 px-3 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-800 focus:outline-none focus:border-[#002B93] focus:bg-white transition-colors" />
+
+                    @if (userForm.get('email')?.invalid && userForm.get('email')?.touched) {
+                    @if (userForm.get('email')?.hasError('required')) {
+                    <span class="text-red-500 text-[10px] font-medium">O e-mail é obrigatório.</span>
+                    }
+                    @if (userForm.get('email')?.hasError('email')) {
+                    <span class="text-red-500 text-[10px] font-medium">Insira um e-mail válido.</span>
+                    }
+                    }
+                </div>
+
+                <div class="flex flex-col gap-1">
+                    <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wide">Telefone / Ramal</label>
+                    <input type="text" formControlName="phone" placeholder="(83) 99999-9999"
+                        class="h-10 px-3 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-800 focus:outline-none focus:border-[#002B93] focus:bg-white transition-colors" />
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-1">
+                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wide">Departamento / Setor</label>
+                <select formControlName="departmentId"
+                    [class.border-red-500]="userForm.get('departmentId')?.invalid && userForm.get('departmentId')?.touched"
+                    class="h-10 px-3 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-800 focus:outline-none focus:border-[#002B93] focus:bg-white transition-colors cursor-pointer">
+                    <option value="" disabled selected>Selecione um setor...</option>
+                    @for (dept of departments(); track dept.id) {
+                    <option [value]="dept.id">{{ dept.code }} - {{ dept.name }}</option>
+                    }
+                </select>
+
+                @if (userForm.get('departmentId')?.invalid && userForm.get('departmentId')?.touched) {
+                <span class="text-red-500 text-[10px] font-medium">Selecione um departamento.</span>
+                }
+            </div>
+
+            <div class="flex flex-col gap-1">
+                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wide">
+                    Senha de Acesso {{ isEditing() ? '(Deixe em branco para manter a atual)' : '' }}
+                </label>
+                <input type="password" formControlName="password" placeholder="Mínimo 8 caracteres"
+                    [class.border-red-500]="userForm.get('password')?.invalid && userForm.get('password')?.touched"
+                    class="h-10 px-3 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-800 focus:outline-none focus:border-[#002B93] focus:bg-white transition-colors" />
+
+                @if (userForm.get('password')?.invalid && userForm.get('password')?.touched) {
+                @if (userForm.get('password')?.hasError('required')) {
+                <span class="text-red-500 text-[10px] font-medium">A senha é obrigatória.</span>
+                }
+                @if (userForm.get('password')?.hasError('minlength')) {
+                <span class="text-red-500 text-[10px] font-medium">A senha deve ter no mínimo 8 caracteres.</span>
+                }
+                @if (userForm.get('password')?.hasError('pattern')) {
+                <span class="text-red-500 text-[10px] font-medium text-justify">
+                    A senha deve ser forte: adicione pelo menos uma letra maiúscula, uma letra minúscula e um número.
+                </span>
+                }
+                }
+            </div>
+
+            <div class="border-t border-gray-100 my-1"></div>
+
+            <div class="flex flex-col gap-3">
+                <span class="text-[11px] font-bold text-gray-500 uppercase tracking-wide">Permissões e Status</span>
+
+                <label
+                    class="flex items-center gap-3 p-3 bg-gray-50 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-100/70 transition-colors select-none">
+                    <input type="checkbox" formControlName="isAdmin"
+                        class="w-4 h-4 rounded text-[#002B93] focus:ring-[#002B93] cursor-pointer" />
+                    <div class="flex flex-col">
+                        <span class="text-xs font-semibold text-gray-900">Acesso de Administrador</span>
+                        <span class="text-[10px] text-gray-500">Permite gerenciar usuários, setores e configurações do
+                            painel.</span>
+                    </div>
+                </label>
+
+                <label
+                    class="flex items-center gap-3 p-3 bg-gray-50 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-100/70 transition-colors select-none">
+                    <input type="checkbox" formControlName="isManager"
+                        class="w-4 h-4 rounded text-[#002B93] focus:ring-[#002B93] cursor-pointer" />
+                    <div class="flex flex-col">
+                        <span class="text-xs font-semibold text-gray-900">Gestor Responsável</span>
+                        <span class="text-[10px] text-gray-500">Define este usuário como líder/gerente do departamento
+                            selecionado.</span>
+                    </div>
+                </label>
+
+                <label
+                    class="flex items-center gap-3 p-3 bg-gray-50 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-100/70 transition-colors select-none">
+                    <input type="checkbox" formControlName="active"
+                        class="w-4 h-4 rounded text-[#002B93] focus:ring-[#002B93] cursor-pointer" />
+                    <div class="flex flex-col">
+                        <span class="text-xs font-semibold text-gray-900">Status Ativo</span>
+                        <span class="text-[10px] text-gray-500">Se desmarcado, o funcionário fica "Afastado" e perde o
+                            acesso ao SisCom.</span>
+                    </div>
+                </label>
+            </div>
+
+            <div class="flex items-center justify-end gap-3 border-t border-gray-100 pt-4 mt-2">
+                <button type="button" (click)="onClose.emit()"
+                    class="h-10 px-4 text-xs font-semibold text-gray-600 hover:text-gray-800 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-lg transition-colors">
+                    Cancelar
+                </button>
+
+                <button type="submit" [disabled]="userForm.invalid"
+                    class="h-10 px-5 bg-[#002B93] hover:bg-[#002271] disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed text-white font-medium rounded-lg text-xs shadow-sm transition-colors">
+                    {{ isEditing() ? 'Salvar Alterações' : 'Salvar Usuário' }}
+                </button>
+            </div>
+
+        </form>
+    </div>
+</div>
