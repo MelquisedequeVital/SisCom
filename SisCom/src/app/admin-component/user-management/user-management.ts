@@ -5,6 +5,7 @@ import { UserService } from '../../services/user.service';
 import { User } from '../../models/user.model';
 import { UserModal } from "./user-modal/user-modal";
 import { DepartmentService } from '../../services/department.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-user-management',
@@ -40,16 +41,30 @@ export class UserManagement {
     if (userData.id) {
       this.userServ.updateUser(userData.id, userData)
     } else {
-      this.userServ.addUser(userData as Omit<User, 'id'>)
+      
+      const newUser: Omit<User, 'id'> = {
+        name: userData.name!,
+        email: userData.email!,
+        department: userData.department!,
+        isAdmin: userData.isAdmin || false,
+        isManager: userData.isManager || false,
+        active: userData.active ?? true,
+        phone: userData.phone,
+        password: 'senha-padrao-provisoria',
+        createdAt: new Date(),
+        chats: [],
+      }
+
+      this.userServ.addUser(newUser);
     }
 
     this.fecharModal();
   }
 
-  async removerUsuario(id: string): Promise<void> {
+  removerUsuario(id: string) {
     if (confirm('Deseja remover este servidor do sistema?')) {
       try {
-        await this.userServ.deleteUser(id);
+        this.userServ.deleteUser(id);
       } catch (error) {
         console.error(error);
       }
