@@ -1,12 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { User } from '../models/user.model';
-import { firstValueFrom } from 'rxjs';
+import { catchError, firstValueFrom, Observable, of } from 'rxjs';
+import { ApiService } from './api.service';
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
-  private http = inject(HttpClient);
+  private api = inject(ApiService);
   private readonly apiUrl = 'http://localhost:4200/api/users';
 
   private usersSignal = signal<User[]>([]);
@@ -16,62 +17,58 @@ export class UserService {
     this.loadUsers();
   }
 
-  async loadUsers() {
-    try {
-      const data = await firstValueFrom(this.http.get<User[]>(this.apiUrl));
-      this.usersSignal.set(data);
-    } catch (error) {
-      console.error('Erro ao carregar usuários:', error);
-    }
+  loadUsers() {
+    this.api.getAll<User>(this.apiUrl).subscribe({
+      next: (data) => this.usersSignal.set(data),
+      error: (err) => console.error("Erro ao carregar usuários", err)
+    })
   }
 
-  async addUser(user: Omit<User, 'id'>) {
-    try {
-      const newUser = await firstValueFrom(this.http.post<User>(this.apiUrl, user));
-      this.usersSignal.update(oldUsers => [...oldUsers, newUser]);
-      return newUser;
-    } catch (error) {
-      console.error("Erro ao adicionar usuário: ", error);
-      throw error
-    }
+  addUser(user: Omit<User, 'id'>) {
+    this.api.create<User>(this.apiUrl, user).subscribe({
+      next: (newUserWithId) => this.usersSignal.update(oldUsers => [...oldUsers, newUserWithId]),
+      error: (err) => console.error("Erro ao adicionar usuário: ", err)
+    })
   }
 
-  async updateUser(id: string, userData: Partial<User>) {
-    try {
-      const current = this.usersSignal().find(u => u.id == id);
-      const fullUpdatedData = {...current, ...userData};
+  updateUser(userId: string, userData: Partial<User>) {
 
-      const updatedUser = await firstValueFrom(this.http.put<User>(`${this.apiUrl}/${id}`, fullUpdatedData));
-      this.usersSignal.update(users =>
-        users.map(u => u.id === id ? updatedUser : u)
-      )
-    } catch (error) {
-      console.error('Erro ao atualizar usuário no SisCom:', error);
-      throw error
-    }
+    const current = this.usersSignal().find(u => u.id == userId);
+    const fullUpdatedData = { ...current, ...userData };
+
+    this.api.update<User>(this.apiUrl, userId, fullUpdatedData).subscribe({
+      next: (updatedUser) => {
+        this.usersSignal.update(users =>
+          users.map(u => u.id === userId ? updatedUser : u)
+        )
+      },
+      error: (err) => console.error("Erro ao atualizar usuário: ", err)
+    })
   }
 
-  async deleteUser(id: string){
-    try{
-      await firstValueFrom(this.http.delete(`${this.apiUrl}/${id}`));
-      this.usersSignal.update(users =>
-        users.filter(u => u.id !== id)
-      );
-    } catch (error) {
-      console.error("Erro ao deletar usuário: ", error);
-      throw error
-    }
+  deleteUser(userId: string) {
+    this.api.delete(this.apiUrl, userId).subscribe({
+      next: () => {
+        this.usersSignal.update(users =>
+          users.filter(u => u.id !== userId)
+        );
+      },
+      error: (err) => console.error("Erro ao deletar usuário: ", err)
+    })
   }
 
-  async getUserById(id: string): Promise<User | undefined>{
+  getUserById(id: string): Observable<User | undefined> {
     const cachedUser = this.usersSignal().find(u => u.id === id);
-    if(cachedUser) return cachedUser;
 
-    try{
-      return await firstValueFrom(this.http.get<User>(`${this.apiUrl}/${id}`));
-    } catch(error){
-      return undefined;
+    if (cachedUser) {
+      return of(cachedUser);
     }
 
+    return this.api.getById<User>(this.apiUrl, id).pipe(
+      catchError((error) => {
+        console.error("Erro ao buscar usuário por ID:", error);
+        return of(undefined);
+      })
+    );
   }
 }

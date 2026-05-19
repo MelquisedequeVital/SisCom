@@ -1,13 +1,14 @@
-import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { Meeting } from '../models/meeting.model';
-import { firstValueFrom } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+import { ApiService } from './api.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class MeetingService {
-  private http = inject(HttpClient);
+  private api = inject(ApiService);
   private readonly apiUrl = 'http://localhost:4200/api/meetings';
 
   private meetingsSignal = signal<Meeting[]>([]);
@@ -17,65 +18,65 @@ export class MeetingService {
     this.loadMeetings();
   }
 
-  async loadMeetings() {
-    try {
-      const data = await firstValueFrom(this.http.get<Meeting[]>(this.apiUrl));
-      this.meetingsSignal.set(data);
-    } catch (error) {
-      console.error('Erro ao carregar reuniões:', error);
-    }
+  loadMeetings() {
+    this.api.getAll<Meeting>(this.apiUrl).subscribe({
+      next: (data) => this.meetingsSignal.set(data),
+      error: (error) => console.error('Erro ao carregar reuniões:', error)
+    });
   }
 
-  async scheduleMeeting(meeting: Omit<Meeting, 'id'>) {
-    try {
-      const newMeeting = await firstValueFrom(this.http.post<Meeting>(this.apiUrl, meeting));
-      this.meetingsSignal.update(meetings => [...meetings, newMeeting]);
-      return newMeeting
-    } catch (error) {
-      console.error("Erro ao marcar reunião: ", error)
-      throw error
-    }
+  scheduleMeeting(meeting: Omit<Meeting, 'id'>) {
+    this.api.create<Meeting>(this.apiUrl, meeting).subscribe({
+      next: (newMeeting) => {
+        this.meetingsSignal.update(meetings => [...meetings, newMeeting]);
+      },
+      error: (error) => console.error("Erro ao marcar reunião: ", error)
+    });
   }
 
-  async updateMeeting(id: string, meetingData: Partial<Meeting>) {
-    try {
-      const current = this.meetingsSignal().find(m => m.id === id);
-      
-      if (!current) return;
-      const fullUpdatedData = { ...current, ...meetingData };
-      
-      const updatedMeeting = await firstValueFrom(this.http.put<Meeting>(`${this.apiUrl}/${id}`, fullUpdatedData));
-      this.meetingsSignal.update(meeting =>
-        meeting.map(m => m.id === id ? updatedMeeting : m)
-      )
-    } catch (error) {
-      console.error('Erro ao atualizar reunião no SisCom:', error);
-      throw error
+  updateMeeting(id: string, meetingData: Partial<Meeting>) {
+    const current = this.meetingsSignal().find(m => m.id === id);
+    
+    if (!current) {
+      console.error("Reunião não encontrada no cache local para atualização");
+      return;
     }
+    
+    const fullUpdatedData = { ...current, ...meetingData };
+    
+    this.api.update<Meeting>(this.apiUrl, id, fullUpdatedData).subscribe({
+      next: (updatedMeeting) => {
+        this.meetingsSignal.update(meetings =>
+          meetings.map(m => m.id === id ? updatedMeeting : m)
+        );
+      },
+      error: (error) => console.error('Erro ao atualizar reunião no SisCom:', error)
+    });
   }
 
-  async cancelMeeting(id: string) {
-    try {
-      await firstValueFrom(this.http.delete(`${this.apiUrl}/${id}`));
-      this.meetingsSignal.update(meeting =>
-        meeting.filter(m => m.id !== id)
-      );
-    } catch (error) {
-      console.error("Erro ao cancelar reunião: ", error);
-      throw error
-    }
+  cancelMeeting(id: string) {
+    this.api.delete<Meeting>(this.apiUrl, id).subscribe({
+      next: () => {
+        this.meetingsSignal.update(meetings =>
+          meetings.filter(m => m.id !== id)
+        );
+      },
+      error: (error) => console.error("Erro ao cancelar reunião: ", error)
+    });
   }
 
-  async getMeetingById(id: string): Promise<Meeting | undefined> {
+  getMeetingById(id: string): Observable<Meeting | undefined> {
     const cachedMeeting = this.meetingsSignal().find(m => m.id === id);
-    if (cachedMeeting) return cachedMeeting;
-
-    try {
-      return await firstValueFrom(this.http.get<Meeting>(`${this.apiUrl}/${id}`));
-    } catch (error) {
-      return undefined;
+    
+    if (cachedMeeting) {
+      return of(cachedMeeting);
     }
-
+    
+    return this.api.getById<Meeting>(this.apiUrl, id).pipe(
+      catchError((error) => {
+        console.error(`Erro ao buscar reunião com ID ${id}:`, error);
+        return of(undefined);
+      })
+    );
   }
-
 }

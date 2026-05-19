@@ -1,13 +1,14 @@
-import { HttpClient } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { Department } from '../models/department.model';
-import { firstValueFrom } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+import { ApiService } from './api.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DepartmentService {
-  private http = inject(HttpClient);
+  private api = inject(ApiService);
   private readonly API_URL = 'http://localhost:4200/api/departments';
 
   private departmentsSignal = signal<Department[]>([]);
@@ -17,58 +18,65 @@ export class DepartmentService {
     this.loadDepartments();
   }
 
-  async loadDepartments() {
-    try {
-      const departments = await firstValueFrom(this.http.get<Department[]>(this.API_URL));
-      this.departmentsSignal.set(departments)
-    } catch (error) {
-      console.error("Erro ao carregar departamentos do bd: ", error);
-      throw error
-    }
+  loadDepartments() {
+    this.api.getAll<Department>(this.API_URL).subscribe({
+      next: (departments) => this.departmentsSignal.set(departments),
+      error: (error) => console.error("Erro ao carregar departamentos do bd: ", error)
+    });
   }
 
-  async addDepartment(department: Omit<Department, 'id'>) {
-    try {
-      const newDepartment = await firstValueFrom(this.http.post<Department>(this.API_URL, department));
-      this.departmentsSignal.update(departments => [...departments, newDepartment]);
-    } catch (error) {
-      console.error("Erro ao adicionar departamento: ", error);
-      throw error
-    }
+  addDepartment(department: Omit<Department, 'id'>) {
+    this.api.create<Department>(this.API_URL, department).subscribe({
+      next: (newDepartment) => {
+        this.departmentsSignal.update(departments => [...departments, newDepartment]);
+      },
+      error: (error) => console.error("Erro ao adicionar departamento: ", error)
+    });
   }
 
-  async deleteDepartment(depId: string) {
-    try {
-      await firstValueFrom(this.http.delete(`${this.API_URL}/${depId}`));
-      this.departmentsSignal.update(deps => deps.filter(dep => dep.id !== depId))
-    } catch (error) {
-      console.error("Erro ao deletar departamento: ", error);
-      throw error
-    }
+  deleteDepartment(depId: string) {
+    this.api.delete<Department>(this.API_URL, depId).subscribe({
+      next: () => {
+        this.departmentsSignal.update(deps => deps.filter(dep => dep.id !== depId));
+      },
+      error: (error) => console.error("Erro ao deletar departamento: ", error)
+    });
   }
 
-  async updateDepartment(deptId: string, changedDept: Partial<Department>){
-    try{
-      const current = this.departmentsSignal().find(dept => dept.id === deptId);
-      const fullUpdatedData = {...current, ...changedDept};
-      const updatedDepartment = await firstValueFrom(this.http.put<Department>(`${this.API_URL}/${deptId}`, fullUpdatedData ));
-      this.departmentsSignal.update(depts => 
-        depts.map(dept => dept.id === deptId ? updatedDepartment : dept)
-      )
-    } catch (error){
-      console.error("Erro ao atualizar departamento: ", error);
-      throw error
+  updateDepartment(deptId: string, changedDept: Partial<Department>) {
+    const current = this.departmentsSignal().find(dept => dept.id === deptId);
+    
+    if (!current) {
+      console.error("Departamento não encontrado no cache local para atualização");
+      return;
     }
+
+    const fullUpdatedData = { ...current, ...changedDept };
+    
+    this.api.update<Department>(this.API_URL, deptId, fullUpdatedData).subscribe({
+      next: (updatedDepartment) => {
+        this.departmentsSignal.update(depts => 
+          depts.map(dept => dept.id === deptId ? updatedDepartment : dept)
+        );
+      },
+      error: (error) => console.error("Erro ao atualizar departamento: ", error)
+    });
   }
 
-  async getDeptById(deptId: string){
+  getDeptById(deptId: string): Observable<Department | undefined> {
     const cachedDept = this.departmentsSignal().find(dept => dept.id === deptId);
-    if(!cachedDept) return;
-
-    try {
-      return await firstValueFrom(this.http.get(`${this.API_URL}/${deptId}`));
-    } catch (error) {
-      return undefined
+    
+    // Retorna do Signal instantaneamente se já estiver em cache
+    if (cachedDept) {
+      return of(cachedDept);
     }
+
+    // Caso contrário, busca pela API com tratamento de erro
+    return this.api.getById<Department>(this.API_URL, deptId).pipe(
+      catchError((error) => {
+        console.error(`Erro ao buscar departamento com ID ${deptId}:`, error);
+        return of(undefined);
+      })
+    );
   }
 }
