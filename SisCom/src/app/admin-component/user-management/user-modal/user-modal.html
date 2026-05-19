@@ -8,7 +8,7 @@
                 {{ isEditing() ? 'Editar Usuário' : 'Cadastrar Novo Usuário' }}
             </h3>
             <button (click)="onClose.emit()"
-                class="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors" >
+                class="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -20,7 +20,17 @@
             <div class="flex flex-col gap-1">
                 <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wide">Nome Completo</label>
                 <input type="text" formControlName="name" placeholder="Ex: João Silva"
+                    [class.border-red-500]="userForm.get('name')?.invalid && userForm.get('name')?.touched"
                     class="h-10 px-3 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-800 focus:outline-none focus:border-[#002B93] focus:bg-white transition-colors" />
+
+                @if (userForm.get('name')?.invalid && userForm.get('name')?.touched) {
+                @if (userForm.get('name')?.hasError('required')) {
+                <span class="text-red-500 text-[10px] font-medium">O nome é obrigatório.</span>
+                }
+                @if (userForm.get('name')?.hasError('minlength')) {
+                <span class="text-red-500 text-[10px] font-medium">O nome deve ter no mínimo 3 caracteres.</span>
+                }
+                }
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -28,7 +38,17 @@
                     <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wide">E-mail
                         Institucional</label>
                     <input type="email" formControlName="email" placeholder="nome@sistema.com"
+                        [class.border-red-500]="userForm.get('email')?.invalid && userForm.get('email')?.touched"
                         class="h-10 px-3 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-800 focus:outline-none focus:border-[#002B93] focus:bg-white transition-colors" />
+
+                    @if (userForm.get('email')?.invalid && userForm.get('email')?.touched) {
+                    @if (userForm.get('email')?.hasError('required')) {
+                    <span class="text-red-500 text-[10px] font-medium">O e-mail é obrigatório.</span>
+                    }
+                    @if (userForm.get('email')?.hasError('email')) {
+                    <span class="text-red-500 text-[10px] font-medium">Insira um e-mail válido.</span>
+                    }
+                    }
                 </div>
 
                 <div class="flex flex-col gap-1">
@@ -41,12 +61,40 @@
             <div class="flex flex-col gap-1">
                 <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wide">Departamento / Setor</label>
                 <select formControlName="departmentId"
+                    [class.border-red-500]="userForm.get('departmentId')?.invalid && userForm.get('departmentId')?.touched"
                     class="h-10 px-3 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-800 focus:outline-none focus:border-[#002B93] focus:bg-white transition-colors cursor-pointer">
                     <option value="" disabled selected>Selecione um setor...</option>
                     @for (dept of departments(); track dept.id) {
                     <option [value]="dept.id">{{ dept.code }} - {{ dept.name }}</option>
                     }
                 </select>
+
+                @if (userForm.get('departmentId')?.invalid && userForm.get('departmentId')?.touched) {
+                <span class="text-red-500 text-[10px] font-medium">Selecione um departamento.</span>
+                }
+            </div>
+
+            <div class="flex flex-col gap-1">
+                <label class="text-[11px] font-bold text-gray-500 uppercase tracking-wide">
+                    Senha de Acesso {{ isEditing() ? '(Deixe em branco para manter a atual)' : '' }}
+                </label>
+                <input type="password" formControlName="password" placeholder="Mínimo 8 caracteres"
+                    [class.border-red-500]="userForm.get('password')?.invalid && userForm.get('password')?.touched"
+                    class="h-10 px-3 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-800 focus:outline-none focus:border-[#002B93] focus:bg-white transition-colors" />
+
+                @if (userForm.get('password')?.invalid && userForm.get('password')?.touched) {
+                @if (userForm.get('password')?.hasError('required')) {
+                <span class="text-red-500 text-[10px] font-medium">A senha é obrigatória.</span>
+                }
+                @if (userForm.get('password')?.hasError('minlength')) {
+                <span class="text-red-500 text-[10px] font-medium">A senha deve ter no mínimo 8 caracteres.</span>
+                }
+                @if (userForm.get('password')?.hasError('pattern')) {
+                <span class="text-red-500 text-[10px] font-medium text-justify">
+                    A senha deve ser forte: adicione pelo menos uma letra maiúscula, uma letra minúscula e um número.
+                </span>
+                }
+                }
             </div>
 
             <div class="border-t border-gray-100 my-1"></div>

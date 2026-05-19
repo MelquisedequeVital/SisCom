@@ -19,7 +19,7 @@ export class UserModal implements OnInit {
   public onSave = output<Partial<User>>();
 
   public userForm!: FormGroup;
-  
+
   public isEditing = () => !!this.userToEdit();
 
   constructor() {
@@ -35,6 +35,14 @@ export class UserModal implements OnInit {
           isManager: user.isManager,
           active: user.active
         });
+
+
+        this.userForm.get('password')?.clearValidators();
+        this.userForm.get('password')?.setValidators([
+          Validators.minLength(8),
+          Validators.pattern(/(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])/)
+        ]);
+        this.userForm.get('password')?.updateValueAndValidity();
       }
     });
   }
@@ -49,6 +57,11 @@ export class UserModal implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       phone: [''],
       departmentId: ['', [Validators.required]],
+      password: ['', [
+        Validators.required,
+        Validators.minLength(8),
+        Validators.pattern(/(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])/)
+      ]],
       isAdmin: [false],
       isManager: [false],
       active: [true]
@@ -74,6 +87,10 @@ export class UserModal implements OnInit {
       department: selectedDept,
       ...(this.isEditing() && { id: this.userToEdit()?.id })
     };
+
+    if (rawValues.password) {
+      userData.password = rawValues.password;
+    }
 
     this.onSave.emit(userData);
   }
