@@ -1,8 +1,8 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { finalize } from 'rxjs/operators';
+import { ChatService } from '../../services/chat.service';
+import { Chat } from '../../models/chat.model';
 
 @Component({
   selector: 'app-form',
@@ -14,43 +14,49 @@ import { finalize } from 'rxjs/operators';
 export class Form {
   private fb = inject(FormBuilder);
   private router = inject(Router);
-  private http = inject(HttpClient);
-  
-  enviando = signal<boolean>(false);
+  private chatServ = inject(ChatService); // Injeção do novo serviço
+
+  enviando = signal(false);
 
   form = this.fb.group({
-    motivo: ['', Validators.required, Validators.minLength(10)],
-    urgencia: ['media', Validators.required],
+    // CORREÇÃO: Validadores síncronos agrupados em uma array []
+    motivo: ['', [Validators.required, Validators.minLength(10)]],
+    // AJUSTE: Valor inicial alterado para 'moderate' para casar com o modelo Chat
+    urgencia: ['moderate', Validators.required],
   });
 
-    // REQUISITO: Requisição assíncrona com HttpClient
-    enviarSolicitacao() {
-      if (this.form.invalid) return;
+  enviarSolicitacao() {
+    if (this.form.invalid) return;
 
-      this.enviando.set(true);
-      
-      const payload = this.form.value;
+    // Você pode voltar a usar o estado de "enviando" para desabilitar o botão aqui
+    this.enviando.set(true);
 
-      this.http.post('https://api.siscom.com/solicitacoes', payload)
-        .pipe(
-          finalize(() => this.enviando.set(false))
-        )
-        .subscribe({
-          next: (resposta) => {
-            console.log('Solicitação criada com sucesso!', resposta);
-            // Retorna para a tela de conversas/dashboard
-            this.navegar('conversas');
-          },
-          error: (erro) => {
-            console.error('Erro ao enviar solicitação:', erro);
-            // Mock para funcionar no front mesmo sem o backend rodando ainda:
-            alert('Mock: Enviado com sucesso (modo de desenvolvimento sem API)!');
-            this.navegar('conversas');
-          }
-        });
-    }
+    const rawValues = this.form.value;
 
-    navegar(rota: string) {
-      this.router.navigate([`/${rota}`]);
-    }
+    const novaSolicitacao: Omit<Chat, 'id'> = {
+      subject: rawValues.motivo!,
+      urgency: rawValues.urgencia as 'low' | 'moderate' | 'high',
+      messages: [],
+      participants: []
+    };
+
+    // Agora o componente SE INSCREVE e aguarda o resultado
+    this.chatServ.addChat(novaSolicitacao).subscribe({
+      next: () => {
+        // SUCESSO: O Signal já foi atualizado pelo serviço. Agora sim, redireciona!
+        this.enviando.set(false);
+        this.navegar('conversas');
+      },
+      error: (erro) => {
+        // ERRO: O redirecionamento NÃO acontece.
+        this.enviando.set(false);
+        console.error('Falha na API:', erro);
+        alert('Não foi possível enviar a solicitação. Verifique sua conexão e tente novamente.');
+      }
+    });
+  }
+
+  navegar(rota: string) {
+    this.router.navigate([`/${rota}`]);
+  }
 }

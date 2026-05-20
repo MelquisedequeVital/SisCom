@@ -5,7 +5,6 @@
     <p class="subtitle">Informe o motivo e a urgência para iniciar um novo chamado.</p>
 
     <form [formGroup]="form" (ngSubmit)="enviarSolicitacao()">
-          
         <div class="form-group">
         <label for="motivo">Motivo da Comunicação</label>
         <textarea 
@@ -22,21 +21,17 @@
         <div class="form-group">
         <label for="urgencia">Grau de Urgência</label>
         <select id="urgencia" formControlName="urgencia">
-            <option value="baixa">Baixa (Informativo / Rotina)</option>
-            <option value="media">Média (Requer atenção no mesmo dia)</option>
-            <option value="alta">Alta (Resolução imediata necessária)</option>
+            <option value="low">Baixa (Informativo / Rotina)</option>
+            <option value="moderate">Média (Requer atenção no mesmo dia)</option>
+            <option value="high">Alta (Resolução imediata necessária)</option>
         </select>
         </div>
 
         <div class="actions">
         <button type="button" class="btn-cancelar" (click)="navegar('conversas')">Cancelar</button>
             
-        <button type="submit" class="btn-enviar" [disabled]="form.invalid || enviando()">
-            @if (enviando()) {
-            <span>Enviando...</span>
-            } @else {
+        <button type="submit" class="btn-enviar" [disabled]="form.invalid">
             <span>Enviar Solicitação</span>
-            }
         </button>
         </div>
     </form>
