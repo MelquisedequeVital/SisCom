@@ -20,55 +20,35 @@
       </button>
     </div>
 
-    @if (totalTickets() === 0) {
-      <div class="bg-white border border-dashed border-[#c4c5d5] rounded-[4px] p-10 text-center text-[#444653]">
-        <p class="font-medium">Aguardando sincronização...</p>
-        <button (click)="refreshAllIndicators()" class="mt-4 border border-[#747684] hover:bg-slate-50 text-[#191c1d] font-semibold py-2 px-4 rounded-[4px] text-sm transition-colors">
-          🔄 Sincronizar
-        </button>
-      </div>
-    } @else {
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
-        
-        <div class="bg-white border border-[#c4c5d5] rounded-[4px] p-6 flex items-center gap-4 shadow-sm">
-          <span class="text-3xl p-2.5 bg-slate-100 rounded-[4px]">📁</span>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-8">
+      
+      <div (click)="navigateTo('chats')" class="bg-white border border-[#c4c5d5] rounded-[4px] p-6 flex items-center justify-between shadow-sm cursor-pointer hover:border-[#003399] hover:shadow-md transition-all group">
+        <div class="flex items-center gap-4">
+          <span class="text-3xl p-2.5 bg-blue-50 rounded-[4px] group-hover:bg-blue-100 transition-colors">💬</span>
           <div>
-            <h3 class="text-xs font-bold text-[#444653] uppercase tracking-wider">Total de Chamados</h3>
-            <p class="text-3xl font-extrabold text-[#002068] mt-1">{{ totalTickets() }}</p>
+            <h3 class="text-xs font-bold text-[#444653] uppercase tracking-wider">Comunicação</h3>
+            <p class="text-2xl font-extrabold text-[#002068] mt-1">Acessar Chats</p>
           </div>
         </div>
-
-        <div class="bg-white border border-[#c4c5d5] border-left-4 border-l-[#c62828] rounded-[4px] p-6 flex items-center gap-4 shadow-sm">
-          <span class="text-3xl p-2.5 bg-red-50 rounded-[4px]">🚨</span>
-          <div>
-            <h3 class="text-xs font-bold text-[#444653] uppercase tracking-wider">Mensagens Pendentes</h3>
-            <p class="text-3xl font-extrabold text-[#c62828] mt-1">{{ pendingUnreadMessages() }}</p>
-          </div>
-        </div>
-
-        <div class="bg-white border border-[#c4c5d5] rounded-[4px] p-6 flex items-center gap-4 shadow-sm">
-          <span class="text-3xl p-2.5 bg-blue-50 rounded-[4px]">📅</span>
-          <div>
-            <h3 class="text-xs font-bold text-[#444653] uppercase tracking-wider">Reuniões Agendadas</h3>
-            <p class="text-3xl font-extrabold text-[#002068] mt-1">{{ totalMeetingsScheduled() }}</p>
-          </div>
-        </div>
-
-        <div class="bg-white border border-[#c4c5d5] rounded-[4px] p-6 flex items-center gap-4 shadow-sm">
-          <span class="text-3xl p-2.5 bg-slate-100 rounded-[4px]">🏢</span>
-          <div>
-            <h3 class="text-xs font-bold text-[#444653] uppercase tracking-wider">Setores Monitorados</h3>
-            <p class="text-3xl font-extrabold text-[#002068] mt-1">{{ totalActiveDepartments() }}</p>
-          </div>
-        </div>
-
+        <span class="text-[#002068] text-2xl font-bold group-hover:translate-x-1 transition-transform">→</span>
       </div>
 
-      <div class="flex justify-start">
-        <button (click)="refreshAllIndicators()" class="bg-white border border-[#747684] hover:bg-slate-50 text-[#191c1d] font-semibold py-2 px-5 rounded-[4px] text-sm transition-colors">
-          🔄 Sincronizar Painel
-        </button>
+      <div class="bg-white border border-[#c4c5d5] rounded-[4px] p-6 flex items-center gap-4 shadow-sm">
+        <span class="text-3xl p-2.5 bg-blue-50 rounded-[4px]">📅</span>
+        <div>
+          <h3 class="text-xs font-bold text-[#444653] uppercase tracking-wider">Reuniões Agendadas</h3>
+          <p class="text-3xl font-extrabold text-[#002068] mt-1">{{ totalMeetingsScheduled() }}</p>
+        </div>
       </div>
-    }
+
+      <div class="bg-white border border-[#c4c5d5] rounded-[4px] p-6 flex items-center gap-4 shadow-sm">
+        <span class="text-3xl p-2.5 bg-slate-100 rounded-[4px]">🏢</span>
+        <div>
+          <h3 class="text-xs font-bold text-[#444653] uppercase tracking-wider">Setores Monitorados</h3>
+          <p class="text-3xl font-extrabold text-[#002068] mt-1">{{ totalActiveDepartments() }}</p>
+        </div>
+      </div>
+
+    </div>
   </main>
 </div>

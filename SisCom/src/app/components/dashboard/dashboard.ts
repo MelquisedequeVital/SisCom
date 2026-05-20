@@ -1,4 +1,3 @@
-
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { ChatService } from '../../services/chat.service';
@@ -21,23 +20,15 @@ export class Dashboard implements OnInit {
 
   isLoading = signal<boolean>(false);
 
-  public totalTickets = computed(() => this.chatService.chats().length);
+  // Mantido para a validação do @if no HTML (saber se já carregou algo)
+  public totalChats = computed(() => this.chatService.chats().length);
 
   public totalMeetingsScheduled = computed(() => this.meetingService.meetings().length);
 
   public totalActiveDepartments = computed(() => this.departmentService.departments().length);
 
-  public pendingUnreadMessages = computed(() => {
-    return this.chatService.chats().reduce((acc, chat) => {
-      const unreadCount = chat.messages.filter(msg => !msg.isRead).length || 0;
-      return acc + unreadCount;
-    }, 0);
-  });
-
   ngOnInit() : void {
-  }
-
-  public refreshAllIndicators() : void{
+	  // Busca os dados frescos assim que a página abre
     this.chatService.loadChats();
     this.meetingService.loadMeetings();
     this.departmentService.loadDepartments();
