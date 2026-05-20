@@ -1,15 +1,3 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-
-@Component({
-  selector: 'app-login',
-  standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './login.html'
-})
-export class Login {
-  loginForm: FormGroup;
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -65,7 +53,7 @@ export class Login {
         console.log('Utilizador autenticado com sucesso:', user);
         
         // Redireciona o utilizador para a página principal (Inbox ou Dashboard)
-        this.router.navigate(['/inbox']); 
+        this.router.navigate(['/chats']); 
       },
       error: (err) => {
         this.isLoading.set(false);
@@ -75,22 +63,5 @@ export class Login {
         this.errorMessage.set('E-mail ou senha incorretos. Por favor, tente novamente.');
       }
     });
-  }
-}
-  constructor(private fb: FormBuilder) {
-    this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
-      rememberMe: [false]
-    });
-  }
-
-  onSubmit() {
-    if (this.loginForm.valid) {
-      console.log('Dados prontos para enviar pro backend:', this.loginForm.value);
-      alert('Tudo certo! Dá uma olhada no console do navegador.');
-    } else {
-      alert('Preencha os campos obrigatórios!');
-    }
   }
 }

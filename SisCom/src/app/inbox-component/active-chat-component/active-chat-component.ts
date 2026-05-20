@@ -2,6 +2,7 @@ import { Component, computed, inject, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ChatService } from '../../services/chat.service';
 import { Chat } from '../../models/chat.model';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-active-chat',
@@ -11,9 +12,10 @@ import { Chat } from '../../models/chat.model';
 })
 export class ActiveChatComponent {
   private chatServ = inject(ChatService);
+  private authService = inject(AuthService);
 
   public chatId = input<string | null>(null);
-  public loggedInUserId = signal<string>('SIS-006');
+  public loggedInUserId = computed(() => this.authService.currentUser()?.id || '');;
 
   private allChats = this.chatServ.chats;
 

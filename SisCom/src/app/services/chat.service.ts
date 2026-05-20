@@ -26,6 +26,11 @@ export class ChatService {
       next: (data) => this.chatsSignal.set(data),
       error: (err) => console.error('Erro ao carregar chats:', err)
     });
+
+    window.addEventListener('storage', (event) => {
+      console.log('Outra aba modificou o banco! Recarregando chats...');
+      this.loadChats();
+    });
   }
 
   addChat(chat: Omit<Chat, 'id'>) {
