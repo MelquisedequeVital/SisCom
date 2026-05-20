@@ -1,0 +1,74 @@
+<div class="max-w-[1200px] mx-auto px-5 bg-[#f8f9fa] min-h-screen">
+  <header class="flex flex-col sm:flex-row justify-between items-center py-6 border-b-2 border-[#c4c5d5] gap-4">
+    <div class="flex items-center gap-3">
+      <span class="text-3xl">💬</span>
+      <h1 class="text-2xl font-black text-[#002068] tracking-tight">SisCom</h1>
+    </div>
+    <nav class="flex gap-6">
+      <a (click)="navigateTo('relatorio')" class="text-[#003399] font-bold text-sm uppercase tracking-wider cursor-pointer border-b-2 border-[#003399] pb-1">Painel Gerencial</a>
+    </nav>
+  </header>
+
+  <main class="mt-10">
+    <div class="flex flex-col md:flex-row justify-between items-start flex-wrap gap-4 mb-8">
+      <div>
+        <h2 class="text-2xl font-bold text-[#002068]">Painel do Gerente — Resumo de Indicadores</h2>
+        <p class="text-[#444653] text-sm mt-1">Visão analítica gerada automaticamente através dos microsserviços integrados do SisCom.</p>
+      </div>
+      <button (click)="navigateTo('agendar-reuniao')" class="bg-[#002068] hover:bg-[#003399] text-white font-semibold py-2.5 px-5 rounded-[4px] shadow-sm transition-colors text-sm flex items-center gap-2">
+        <span>📅</span> Agendar Nova Reunião
+      </button>
+    </div>
+
+    @if (totalTickets() === 0) {
+      <div class="bg-white border border-dashed border-[#c4c5d5] rounded-[4px] p-10 text-center text-[#444653]">
+        <p class="font-medium">Aguardando sincronização...</p>
+        <button (click)="refreshAllIndicators()" class="mt-4 border border-[#747684] hover:bg-slate-50 text-[#191c1d] font-semibold py-2 px-4 rounded-[4px] text-sm transition-colors">
+          🔄 Sincronizar
+        </button>
+      </div>
+    } @else {
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+        
+        <div class="bg-white border border-[#c4c5d5] rounded-[4px] p-6 flex items-center gap-4 shadow-sm">
+          <span class="text-3xl p-2.5 bg-slate-100 rounded-[4px]">📁</span>
+          <div>
+            <h3 class="text-xs font-bold text-[#444653] uppercase tracking-wider">Total de Chamados</h3>
+            <p class="text-3xl font-extrabold text-[#002068] mt-1">{{ totalTickets() }}</p>
+          </div>
+        </div>
+
+        <div class="bg-white border border-[#c4c5d5] border-left-4 border-l-[#c62828] rounded-[4px] p-6 flex items-center gap-4 shadow-sm">
+          <span class="text-3xl p-2.5 bg-red-50 rounded-[4px]">🚨</span>
+          <div>
+            <h3 class="text-xs font-bold text-[#444653] uppercase tracking-wider">Mensagens Pendentes</h3>
+            <p class="text-3xl font-extrabold text-[#c62828] mt-1">{{ pendingUnreadMessages() }}</p>
+          </div>
+        </div>
+
+        <div class="bg-white border border-[#c4c5d5] rounded-[4px] p-6 flex items-center gap-4 shadow-sm">
+          <span class="text-3xl p-2.5 bg-blue-50 rounded-[4px]">📅</span>
+          <div>
+            <h3 class="text-xs font-bold text-[#444653] uppercase tracking-wider">Reuniões Agendadas</h3>
+            <p class="text-3xl font-extrabold text-[#002068] mt-1">{{ totalMeetingsScheduled() }}</p>
+          </div>
+        </div>
+
+        <div class="bg-white border border-[#c4c5d5] rounded-[4px] p-6 flex items-center gap-4 shadow-sm">
+          <span class="text-3xl p-2.5 bg-slate-100 rounded-[4px]">🏢</span>
+          <div>
+            <h3 class="text-xs font-bold text-[#444653] uppercase tracking-wider">Setores Monitorados</h3>
+            <p class="text-3xl font-extrabold text-[#002068] mt-1">{{ totalActiveDepartments() }}</p>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="flex justify-start">
+        <button (click)="refreshAllIndicators()" class="bg-white border border-[#747684] hover:bg-slate-50 text-[#191c1d] font-semibold py-2 px-5 rounded-[4px] text-sm transition-colors">
+          🔄 Sincronizar Painel
+        </button>
+      </div>
+    }
+  </main>
+</div>
