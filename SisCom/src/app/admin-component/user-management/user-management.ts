@@ -1,11 +1,10 @@
 import { Component, inject, signal } from '@angular/core';
-import { AdminHeader } from "../admin-header/admin-header";
 import { UserCard } from "./user-card/user-card";
 import { UserService } from '../../services/user.service';
 import { User } from '../../models/user.model';
 import { UserModal } from "./user-modal/user-modal";
 import { DepartmentService } from '../../services/department.service';
-import { Observable } from 'rxjs';
+
 
 @Component({
   selector: 'app-user-management',
