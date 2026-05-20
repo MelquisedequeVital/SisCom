@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { AdminComponent } from './admin-component/admin.component';
 import { InboxComponent } from './inbox-component/inbox-component';
 import { Form } from './inbox-component/newChatForm/form';
+import { Login } from './components/login/login';
 
 export const routes: Routes = [
     {
@@ -22,5 +23,9 @@ export const routes: Routes = [
     {
         path: 'chats/:id',
         component: InboxComponent
-    }
+    },
+
+    { path: 'login', component: Login },
+  
+     { path: '', redirectTo: 'login', pathMatch: 'full' }
 ];
