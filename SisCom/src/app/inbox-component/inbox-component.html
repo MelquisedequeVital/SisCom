@@ -1,0 +1,86 @@
+<div class="flex flex-1 overflow-hidden h-[calc(100vh-64px)] bg-[#f8f9fa] font-['Public_Sans']">
+
+    <section class="w-full md:w-[400px] bg-white border-r border-slate-200 flex flex-col shrink-0 relative">
+
+        <div class="p-4 border-b border-slate-100 flex flex-col gap-4 bg-slate-50/50">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <h2 class="text-[14px] text-[#002068] tracking-widest font-extrabold uppercase">Caixa de Entrada
+                    </h2>
+                    <span class="bg-[#002068] text-white text-[10px] px-2 py-0.5 rounded-full font-bold">
+                        {{ displayedChats().length }}
+                    </span>
+                </div>
+
+                <button (click)="navegar('request')"
+                    class="bg-[#003399] text-white hover:bg-[#002068] px-3 py-1.5 rounded-lg flex items-center gap-1.5 text-xs font-bold transition-all shadow-sm">
+                    <span class="material-symbols-outlined text-[16px]">add_box</span>
+                    Solicitar
+                </button>
+            </div>
+
+            <div class="flex p-1 bg-slate-200/60 rounded-lg">
+                <button type="button" (click)="activeTab.set('requerido')"
+                    [ngClass]="activeTab() === 'requerido' ? 'bg-white shadow-sm text-[#003399]' : 'text-slate-500'"
+                    class="flex-1 py-1.5 text-xs font-bold rounded-md transition-all flex items-center justify-center gap-1.5">
+                    <span class="material-symbols-outlined text-[16px]">inbox</span>
+                    Fui Requerido
+                </button>
+
+                <button type="button" (click)="activeTab.set('requerente')"
+                    [ngClass]="activeTab() === 'requerente' ? 'bg-white shadow-sm text-[#003399]' : 'text-slate-500'"
+                    class="flex-1 py-1.5 text-xs font-bold rounded-md transition-all flex items-center justify-center gap-1.5">
+                    <span class="material-symbols-outlined text-[16px]">send</span>
+                    Eu Solicitei
+                </button>
+            </div>
+        </div>
+
+        <div class="flex-1 overflow-y-auto custom-scrollbar">
+            @for (chat of displayedChats(); track chat.id) {
+            <div (click)="selecionarChat(chat.id)" [class.bg-secondary-container/30]="chat.id === activeChatId()"
+                class="p-4 border-b border-slate-100 hover:bg-slate-50 cursor-pointer transition-colors relative border-l-4"
+                [ngClass]="getUrgencyConfig(chat.urgency).border">
+
+                <div class="flex justify-between items-start mb-1.5">
+                    <span class="text-[9px] font-black px-2 py-0.5 rounded tracking-widest uppercase"
+                        [ngClass]="[getUrgencyConfig(chat.urgency).bg, getUrgencyConfig(chat.urgency).text]">
+                        {{ getUrgencyConfig(chat.urgency).label }}
+                    </span>
+
+                    @if (getLastMessage(chat)) {
+                    <span class="text-[10px] text-slate-400 font-medium">
+                        {{ getLastMessage(chat)?.timestamp | date:'HH:mm' }}
+                    </span>
+                    }
+                </div>
+
+                <h4 class="font-bold text-[#191c1d] text-sm truncate">{{ chat.subject }}</h4>
+
+                <p class="text-xs text-slate-500 line-clamp-1 mt-1">
+                    {{ getLastMessage(chat)?.content || 'Nenhuma mensagem enviada.' }}
+                </p>
+
+                <div class="flex items-center gap-2 mt-3">
+                    <div
+                        class="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center overflow-hidden text-slate-500">
+                        <span class="material-symbols-outlined text-[14px]">person</span>
+                    </div>
+                    <span class="text-[11px] text-slate-600 font-semibold">
+                        {{ activeTab() === 'requerido' ? 'Solicitado por:' : 'Enviado para:' }}
+                        {{ getOtherParticipantName(chat) }}
+                    </span>
+                </div>
+            </div>
+            } @empty {
+            <div class="flex flex-col items-center justify-center h-full p-8 text-center text-slate-400">
+                <span class="material-symbols-outlined text-4xl mb-2">forum</span>
+                <p class="text-sm font-medium">Nenhuma conversa encontrada nesta aba.</p>
+            </div>
+            }
+        </div>
+    </section>
+
+    <app-active-chat class="flex-grow h-full" [chatId]="activeChatId()"></app-active-chat>
+
+</div>

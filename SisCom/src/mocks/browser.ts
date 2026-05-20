@@ -1,6 +1,6 @@
 import { setupWorker } from 'msw/browser'
 import { handlers } from './handlers'
-import { INITIAL_DEPARTMENTS, INITIAL_USERS } from './initial-data'
+import { INITIAL_CHATS, INITIAL_DEPARTMENTS, INITIAL_USERS } from './initial-data'
 
 
 if (!localStorage.getItem('departments')) {
@@ -9,6 +9,10 @@ if (!localStorage.getItem('departments')) {
 
 if (!localStorage.getItem('users')) {
     localStorage.setItem('users', JSON.stringify(INITIAL_USERS))
+};
+
+if (!localStorage.getItem('chats')) {
+    localStorage.setItem('chats', JSON.stringify(INITIAL_CHATS))
 };
 
 export const worker = setupWorker(...handlers)

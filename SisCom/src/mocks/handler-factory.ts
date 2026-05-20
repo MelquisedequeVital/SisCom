@@ -22,7 +22,7 @@ export const Post = <T extends { id?: string | number }>(url: string, dbKey: str
         const newItem = (await request.json()) as T;
         const itemWithId = {
             ...newItem,
-            id: newItem.id || crypto.randomUUID()
+            id: newItem.id ?? crypto.randomUUID()
         };
         const data = db.get<T>(dbKey);
         data.push(itemWithId as T);

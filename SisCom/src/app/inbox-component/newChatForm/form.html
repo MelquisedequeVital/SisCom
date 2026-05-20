@@ -1,0 +1,80 @@
+<div class="min-h-[calc(100vh-64px)] bg-[#f8f9fa] py-10 px-4 flex justify-center font-['Public_Sans']">
+    <main class="w-full max-w-2xl bg-white p-8 rounded-xl shadow-md border border-slate-200 h-fit">
+
+        <div class="mb-8 border-b border-slate-100 pb-6">
+            <h2 class="text-2xl font-bold text-[#002068] mb-2">Criar Nova Solicitação</h2>
+            <p class="text-sm text-slate-500">Informe o motivo e a urgência para iniciar um novo chamado no SisCom.</p>
+        </div>
+
+        <form [formGroup]="form"  class="space-y-6">
+
+            <div class="space-y-2">
+                <label for="sector" class="block text-[11px] font-bold text-[#002068] uppercase tracking-widest">Setor
+                    de Destino</label>
+                <select id="sector" formControlName="sector"
+                    class="w-full h-12 px-4 rounded-lg border-2 border-slate-300 bg-slate-50 text-slate-700 text-sm shadow-sm focus:bg-white focus:ring-2 focus:ring-[#003399] focus:border-[#003399] transition-all outline-none cursor-pointer">
+                    <option disabled selected value="">Selecione o setor responsável</option>
+                    @for (dept of departments(); track dept.id) {
+                    <option [value]="dept.id">{{ dept.code }} - {{ dept.name }}</option>
+                    }
+                </select>
+            </div>
+
+            <div class="space-y-2">
+                <label for="motivo" class="block text-[11px] font-bold text-[#002068] uppercase tracking-widest">Motivo
+                    / Assunto</label>
+                <input type="text" id="motivo" formControlName="motivo"
+                    class="w-full h-12 px-4 rounded-lg border-2 border-slate-300 bg-slate-50 text-slate-700 text-sm shadow-sm focus:bg-white focus:ring-2 focus:ring-[#003399] focus:border-[#003399] transition-all outline-none"
+                    placeholder="Ex: Falha no sistema de ponto, Dúvida sobre férias..." />
+
+                @if (form.get('motivo')?.touched && form.get('motivo')?.invalid) {
+                <span class="text-[#ba1a1a] text-xs font-medium flex items-center gap-1 mt-1">
+                    <span class="material-symbols-outlined text-[14px]">error</span>
+                    O motivo é obrigatório.
+                </span>
+                }
+            </div>
+
+            <div class="space-y-2">
+                <label for="urgencia" class="block text-[11px] font-bold text-[#002068] uppercase tracking-widest">Grau
+                    de Urgência</label>
+                <select id="urgencia" formControlName="urgencia"
+                    class="w-full h-12 px-4 rounded-lg border-2 border-slate-300 bg-slate-50 text-slate-700 text-sm shadow-sm focus:bg-white focus:ring-2 focus:ring-[#003399] focus:border-[#003399] transition-all outline-none cursor-pointer">
+                    <option value="low">Baixa (Informativo / Rotina)</option>
+                    <option value="moderate">Média (Requer atenção no mesmo dia)</option>
+                    <option value="high">Alta (Resolução imediata necessária)</option>
+                </select>
+            </div>
+
+            <div class="space-y-2">
+                <label for="mensagem"
+                    class="block text-[11px] font-bold text-[#002068] uppercase tracking-widest">Primeira
+                    Mensagem</label>
+                <textarea id="mensagem" formControlName="mensagem"
+                    class="w-full p-4 rounded-lg border-2 border-slate-300 bg-slate-50 text-slate-700 text-sm shadow-sm focus:bg-white focus:ring-2 focus:ring-[#003399] focus:border-[#003399] transition-all outline-none resize-none min-h-[120px]"
+                    placeholder="Descreva detalhadamente a sua solicitação..." rows="5"></textarea>
+
+                @if (form.get('mensagem')?.touched && form.get('mensagem')?.invalid) {
+                <span class="text-[#ba1a1a] text-xs font-medium flex items-center gap-1 mt-1">
+                    <span class="material-symbols-outlined text-[14px]">error</span>
+                    A mensagem inicial é obrigatória.
+                </span>
+                }
+            </div>
+
+            <div class="pt-6 border-t border-slate-100 flex items-center justify-end gap-3 mt-8">
+                <button type="button" (click)="navegar('chats')"
+                    class="px-5 py-2.5 text-xs font-bold text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors uppercase tracking-wider">
+                    Cancelar
+                </button>
+
+                <button type="button" (click)="enviarSolicitacao()" [disabled]="form.invalid"
+                    class="px-6 py-2.5 bg-[#003399] text-white text-xs font-bold uppercase tracking-wider rounded-lg hover:bg-[#002068] disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed transition-all shadow-md flex items-center gap-2">
+                    <span>Enviar Solicitação</span>
+                    <span class="material-symbols-outlined text-[16px]">send</span>
+                </button>
+            </div>
+
+        </form>
+    </main>
+</div>
