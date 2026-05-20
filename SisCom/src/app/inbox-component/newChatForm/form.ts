@@ -5,6 +5,7 @@ import { ChatService } from '../../services/chat.service';
 import { Chat } from '../../models/chat.model';
 import { DepartmentService } from '../../services/department.service';
 import { UserService } from '../../services/user.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-form',
@@ -19,9 +20,10 @@ export class Form {
   private chatServ = inject(ChatService); // Injeção do novo serviço
   private deptServ = inject(DepartmentService);
   private userServ = inject(UserService);
+  private authService = inject(AuthService);
 
   enviando = signal(false);
-  public loggedInUserId = signal<string>('SIS-006');
+  public loggedInUserId = computed(() => this.authService.currentUser()?.id || '');
   public departments = this.deptServ.departments;
 
   form = this.fb.group({

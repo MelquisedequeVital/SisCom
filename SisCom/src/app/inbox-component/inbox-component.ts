@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Chat } from '../models/chat.model';
 import { ChatService } from '../services/chat.service';
 import { ActiveChatComponent } from './active-chat-component/active-chat-component';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-inbox',
@@ -15,8 +16,9 @@ export class InboxComponent implements OnInit {
   private chatServ = inject(ChatService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
+  private authService = inject(AuthService);
 
-  public loggedInUserId = signal<string>('SIS-006');
+  public loggedInUserId = computed(() => this.authService.currentUser()?.id || '');
   public activeTab = signal<'requerido' | 'requerente'>('requerido');
   public activeChatId = signal<string | null>(null);
 
