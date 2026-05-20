@@ -1,7 +1,7 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { Meeting } from '../models/meeting.model';
-import { Observable, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, Observable, of, throwError } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import { ApiService } from './api.service';
 
 @Injectable({
@@ -26,43 +26,39 @@ export class MeetingService {
   }
 
   scheduleMeeting(meeting: Omit<Meeting, 'id'>) {
-    this.api.create<Meeting>(this.apiUrl, meeting).subscribe({
-      next: (newMeeting) => {
+    return this.api.create<Meeting>(this.apiUrl, meeting).pipe(
+      tap((newMeeting) => {
         this.meetingsSignal.update(meetings => [...meetings, newMeeting]);
-      },
-      error: (error) => console.error("Erro ao marcar reunião: ", error)
-    });
+      })
+    );
   }
 
   updateMeeting(id: string, meetingData: Partial<Meeting>) {
     const current = this.meetingsSignal().find(m => m.id === id);
     
     if (!current) {
-      console.error("Reunião não encontrada no cache local para atualização");
-      return;
+      return throwError(() => new Error("Reunião não encontrada no cache local para atualização"));
     }
     
     const fullUpdatedData = { ...current, ...meetingData };
     
-    this.api.update<Meeting>(this.apiUrl, id, fullUpdatedData).subscribe({
-      next: (updatedMeeting) => {
+    return this.api.update<Meeting>(this.apiUrl, id, fullUpdatedData).pipe(
+      tap((updatedMeeting) => {
         this.meetingsSignal.update(meetings =>
           meetings.map(m => m.id === id ? updatedMeeting : m)
         );
-      },
-      error: (error) => console.error('Erro ao atualizar reunião no SisCom:', error)
-    });
+      })
+    );
   }
 
   cancelMeeting(id: string) {
-    this.api.delete<Meeting>(this.apiUrl, id).subscribe({
-      next: () => {
+    return this.api.delete<Meeting>(this.apiUrl, id).pipe(
+      tap(() => {
         this.meetingsSignal.update(meetings =>
           meetings.filter(m => m.id !== id)
         );
-      },
-      error: (error) => console.error("Erro ao cancelar reunião: ", error)
-    });
+      })
+    );
   }
 
   getMeetingById(id: string): Observable<Meeting | undefined> {

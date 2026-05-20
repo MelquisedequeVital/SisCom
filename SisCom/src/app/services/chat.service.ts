@@ -1,8 +1,8 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { Chat } from '../models/chat.model';
 import { Message } from '../models/message.model';
-import { Observable, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { Observable, of, throwError } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
 import { ApiService } from './api.service';
 
 @Injectable({
@@ -27,20 +27,24 @@ export class ChatService {
   }
 
   addChat(chat: Omit<Chat, 'id'>) {
-    this.api.create<Chat>(this.apiUrl, chat).subscribe({
-      next: (newChat) => this.chatsSignal.update(oldChats => [...oldChats, newChat]),
-      error: (err) => console.error('Erro ao criar chat:', err)
-    });
+    return this.api.create<Chat>(this.apiUrl, chat).pipe(
+      tap(newChat => this.chatsSignal.update(oldChats => [...oldChats, newChat]))
+    );
   }
 
   removeChat(chatId: string) {
-    this.api.delete<Chat>(this.apiUrl, chatId).subscribe({
-      next: () => this.chatsSignal.update(chats => chats.filter(c => c.id !== chatId)),
-      error: (err) => console.error('Erro ao remover chat no SisCom:', err)
-    });
+    return this.api.delete<Chat>(this.apiUrl, chatId).pipe(
+      tap(() => this.chatsSignal.update(chats => chats.filter(c => c.id !== chatId)))
+    );
   }
 
   addMessage(id: string, text: string, senderId: string) {
+    const currentChat = this.chatsSignal().find(c => c.id === id);
+
+    if (!currentChat) {
+      return throwError(() => new Error('Chat não encontrado no cache local'));
+    }
+
     const message: Omit<Message, 'id'> = {
       content: text,
       senderID: senderId,
@@ -48,37 +52,29 @@ export class ChatService {
       isRead: false
     };
 
-    const currentChat = this.chatsSignal().find(c => c.id === id);
-    if (!currentChat) {
-      console.error('Chat não encontrado no cache local para adicionar mensagem');
-      return;
-    }
-
     const chatWithNewMessage = {
       ...currentChat,
       messages: [...currentChat.messages, message]
     };
 
-   
-    this.api.update<Chat>(this.apiUrl, id, chatWithNewMessage).subscribe({
-      next: (updatedChat) => {
+    return this.api.update<Chat>(this.apiUrl, id, chatWithNewMessage).pipe(
+      tap((updatedChat) => {
         this.chatsSignal.update(chats =>
           chats.map(c => c.id === id ? updatedChat : c)
         );
-      },
-      error: (err) => console.error('Erro ao adicionar mensagem no chat:', err)
-    });
+      })
+    );
   }
 
   getChatById(id: string): Observable<Chat | undefined> {
     const cached = this.chatsSignal().find(c => c.id === id);
-    
+
 
     if (cached) {
-      return of(cached); 
+      return of(cached);
     }
 
-  
+
     return this.api.getById<Chat>(this.apiUrl, id).pipe(
       catchError((error) => {
         console.error(`Erro ao buscar chat com ID ${id}:`, error);

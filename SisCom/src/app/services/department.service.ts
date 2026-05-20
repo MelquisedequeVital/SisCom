@@ -1,7 +1,7 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { Department } from '../models/department.model';
-import { Observable, of } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { Observable, of, throwError } from 'rxjs'; // Adicionado throwError
+import { catchError, tap } from 'rxjs/operators';
 import { ApiService } from './api.service';
 
 @Injectable({
@@ -18,6 +18,7 @@ export class DepartmentService {
     this.loadDepartments();
   }
 
+  // Mantemos o subscribe aqui porque é uma chamada interna do constructor
   loadDepartments() {
     this.api.getAll<Department>(this.API_URL).subscribe({
       next: (departments) => this.departmentsSignal.set(departments),
@@ -25,53 +26,52 @@ export class DepartmentService {
     });
   }
 
+  // Agora retorna o Observable para o componente aguardar a criação
   addDepartment(department: Omit<Department, 'id'>) {
-    this.api.create<Department>(this.API_URL, department).subscribe({
-      next: (newDepartment) => {
+    return this.api.create<Department>(this.API_URL, department).pipe(
+      tap((newDepartment) => {
         this.departmentsSignal.update(departments => [...departments, newDepartment]);
-      },
-      error: (error) => console.error("Erro ao adicionar departamento: ", error)
-    });
+      })
+    );
   }
 
+  // Agora retorna o Observable para o componente aguardar a exclusão
   deleteDepartment(depId: string) {
-    this.api.delete<Department>(this.API_URL, depId).subscribe({
-      next: () => {
+    return this.api.delete<Department>(this.API_URL, depId).pipe(
+      tap(() => {
         this.departmentsSignal.update(deps => deps.filter(dep => dep.id !== depId));
-      },
-      error: (error) => console.error("Erro ao deletar departamento: ", error)
-    });
+      })
+    );
   }
 
+  // Corrigido: Adicionado o "return" e o throwError para proteção
   updateDepartment(deptId: string, changedDept: Partial<Department>) {
     const current = this.departmentsSignal().find(dept => dept.id === deptId);
     
     if (!current) {
-      console.error("Departamento não encontrado no cache local para atualização");
-      return;
+      // Usamos throwError para avisar o componente que o departamento não existe
+      return throwError(() => new Error("Departamento não encontrado no cache local para atualização"));
     }
 
     const fullUpdatedData = { ...current, ...changedDept };
     
-    this.api.update<Department>(this.API_URL, deptId, fullUpdatedData).subscribe({
-      next: (updatedDepartment) => {
+    // Agora tem o "return", entregando o Observable para o componente!
+    return this.api.update<Department>(this.API_URL, deptId, fullUpdatedData).pipe(
+      tap((updatedDepartment) => {
         this.departmentsSignal.update(depts => 
           depts.map(dept => dept.id === deptId ? updatedDepartment : dept)
         );
-      },
-      error: (error) => console.error("Erro ao atualizar departamento: ", error)
-    });
+      })
+    );
   }
 
   getDeptById(deptId: string): Observable<Department | undefined> {
     const cachedDept = this.departmentsSignal().find(dept => dept.id === deptId);
     
-    // Retorna do Signal instantaneamente se já estiver em cache
     if (cachedDept) {
       return of(cachedDept);
     }
 
-    // Caso contrário, busca pela API com tratamento de erro
     return this.api.getById<Department>(this.API_URL, deptId).pipe(
       catchError((error) => {
         console.error(`Erro ao buscar departamento com ID ${deptId}:`, error);
