@@ -3,7 +3,8 @@ import { AdminComponent } from './admin-component/admin.component';
 import { InboxComponent } from './inbox-component/inbox-component';
 import { Form } from './inbox-component/newChatForm/form';
 import { Login } from './components/login/login';
-import {Dashboard} from './components/dashboard/dashboard';
+import { Dashboard } from './components/dashboard/dashboard';
+import { Cadastro } from './components/cadastro/cadastro';
 
 export const routes: Routes = [
     {
@@ -26,9 +27,24 @@ export const routes: Routes = [
         component: InboxComponent
     },
 
-    { path: 'login', component: Login },
+    { 
+        path: 'login', 
+        component: Login 
+    },
   
-    { path: '', redirectTo: 'login', pathMatch: 'full' },
+    { 
+        path: '', 
+        redirectTo: 'login', 
+        pathMatch: 'full' 
+    },
     
-    {path: 'dashboard', component: Dashboard}
+    {
+        path: 'dashboard', 
+        component: Dashboard
+    },
+
+    { 
+        path: 'cadastro', 
+        component: Cadastro 
+    }
 ];
