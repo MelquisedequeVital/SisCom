@@ -10,6 +10,7 @@ import { AuthService } from '../../services/auth.service';
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './login.html'
 })
+
 export class Login {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
