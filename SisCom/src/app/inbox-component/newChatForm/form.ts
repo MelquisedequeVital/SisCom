@@ -42,22 +42,18 @@ export class Form {
     const requesterId = this.loggedInUserId();
     const rawValues = this.form.value;
 
-    // 1. PRIMEIRO PASSO: Valida o usuário logado com o método seguro
     this.userServ.getUserById(requesterId).subscribe({
       next: (currentUser) => {
 
-        // Se a API retornar indefinido/nulo, o usuário não existe no banco
         if (!currentUser) {
           this.enviando.set(false);
           alert('Erro de Autenticação: O usuário solicitante não foi encontrado no sistema.');
           return;
         }
 
-        // 2. SEGUNDO PASSO: Encontra um usuário que pertence ao departamento escolhido
-        // Ignoramos o próprio usuário logado caso ele seja do mesmo departamento
-        const targetUser = this.userServ.users().find(
+        const targetUser = this.userServ.users().filter(
           u => u.department?.id === rawValues.sector && u.id !== requesterId
-        );
+        ).reduce((u, uc) => u.chats.length < uc.chats.length ? u : uc);
 
         if (!targetUser) {
           this.enviando.set(false);
@@ -65,35 +61,30 @@ export class Form {
           return;
         }
 
-        // 3. TERCEIRO PASSO: Monta o objeto com participantes e a primeira mensagem
-        // (Ajuste 'rawValues.mensagem' caso o nome do seu campo de texto no form seja diferente)
+  
         const novaSolicitacao: Omit<Chat, 'id'> = {
           subject: rawValues.motivo!,
           urgency: rawValues.urgencia as 'low' | 'moderate' | 'high',
           requesterId: requesterId,
           requestedDepartmentId: rawValues.sector!,
           
-          // Adiciona os dois objetos de usuários completos à lista de participantes
           participants: [currentUser, targetUser], 
           
-          // Cria o array contendo a primeira mensagem da conversa
           messages: [
             {
               id: crypto.randomUUID(),
               content: rawValues.mensagem! || 'Nova solicitação aberta.',
               senderID: requesterId,
               timestamp: new Date(),
-              isRead: true // O remetente já inicia com a mensagem lida por ele
+              isRead: true 
             }
           ]
         };
 
-        // 4. QUARTO PASSO: Envia para a API (MSW) e aguarda o objeto com o ID gerado
         this.chatServ.addChat(novaSolicitacao).subscribe({
           next: (chatCriado) => {
             this.enviando.set(false);
             
-            // Redireciona o usuário diretamente para a rota do chat específico criado
             this.router.navigate(['/chats', chatCriado.id]);
           },
           error: (erro) => {
