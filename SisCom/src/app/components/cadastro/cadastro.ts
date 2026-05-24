@@ -16,6 +16,9 @@ export class Cadastro {
   private userService = inject(UserService);
   private router = inject(Router);
 
+  protected passwordVisibilityIcon = "visibility";
+  protected passwordVisibility = "password"
+
   cadastroForm: FormGroup;
 
   constructor() {
@@ -23,7 +26,7 @@ export class Cadastro {
       nomeCompleto: ['', [Validators.required, Validators.minLength(3)]],
       setor: ['', [Validators.required]],
       email: ['', [Validators.required, Validators.email]],
-      senha: ['', [Validators.required, Validators.minLength(3)]],
+      senha: ['', [Validators.required, Validators.minLength(12), Validators.pattern('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*?]).+$')]],
       confirmarSenha: ['', [Validators.required]]
     }, {
       validators: this.passwordMatchValidator 
@@ -39,6 +42,16 @@ export class Cadastro {
       return { passwordMismatch: true };
     }
     return null;
+  }
+
+  tooglePasswordVisibility(){
+    if(this.passwordVisibility == "password"){
+      this.passwordVisibility = 'text'
+      this.passwordVisibilityIcon = 'visibility_off'
+    } else {
+      this.passwordVisibility = 'password';
+      this.passwordVisibilityIcon = 'visibility'
+    }
   }
 
   onSubmit() {

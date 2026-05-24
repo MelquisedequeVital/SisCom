@@ -28,11 +28,9 @@ export class Form {
 
   form = this.fb.group({
     sector: ['', Validators.required],
-    // CORREÇÃO: Validadores síncronos agrupados em uma array []
-    motivo: ['', [Validators.required, Validators.minLength(10)]],
-    // AJUSTE: Valor inicial alterado para 'moderate' para casar com o modelo Chat
+    motivo: ['', [Validators.required]],
     urgencia: ['moderate', Validators.required],
-    mensagem: ['', [Validators.required, Validators.minLength(10)]]
+    mensagem: ['', [Validators.required]]
   });
 
   enviarSolicitacao() {
