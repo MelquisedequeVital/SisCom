@@ -19,6 +19,8 @@ export class Login {
   public loginForm: FormGroup;
   public isLoading = signal<boolean>(false);
   public errorMessage = signal<string | null>(null);
+  public passwordVisibility = 'password';
+  public passwordVisibilityIcon = 'visibility'
 
   constructor() {
     this.loginForm = this.fb.group({
@@ -26,6 +28,16 @@ export class Login {
       password: ['', Validators.required], 
       rememberMe: [false]
     });
+  }
+
+  tooglePasswordVisibility(){
+    if(this.passwordVisibility == "password"){
+      this.passwordVisibility = 'text'
+      this.passwordVisibilityIcon = 'visibility_off'
+    } else {
+      this.passwordVisibility = 'password';
+      this.passwordVisibilityIcon = 'visibility'
+    }
   }
 
   public onSubmit(): void {

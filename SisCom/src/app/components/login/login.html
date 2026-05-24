@@ -1,5 +1,5 @@
 <div class="min-h-screen bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8 font-sans">
-  
+
   <div class="sm:mx-auto sm:w-full sm:max-w-md text-center">
     <div class="mx-auto h-16 w-16 bg-blue-600 rounded-full flex items-center justify-center shadow-md">
       <span class="text-white font-bold text-2xl">SC</span>
@@ -13,72 +13,66 @@
   </div>
 
   <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-    <div class="bg-white py-8 px-4 shadow-xl shadow-slate-200/50 sm:rounded-2xl sm:px-10 border border-slate-100 relative overflow-hidden">
-      
+    <div
+      class="bg-white py-8 px-4 shadow-xl shadow-slate-200/50 sm:rounded-2xl sm:px-10 border border-slate-100 relative overflow-hidden">
+
       @if (errorMessage()) {
-        <div class="mb-5 bg-[#ffdad6] text-[#93000a] text-sm font-semibold p-3 rounded-lg border border-[#ba1a1a] flex items-center gap-2">
-          <span class="material-symbols-outlined text-[18px]">error</span>
-          {{ errorMessage() }}
-        </div>
+      <div
+        class="mb-5 bg-[#ffdad6] text-[#93000a] text-sm font-semibold p-3 rounded-lg border border-[#ba1a1a] flex items-center gap-2">
+        <span class="material-symbols-outlined text-[18px]">error</span>
+        {{ errorMessage() }}
+      </div>
       }
 
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-5 relative z-10">
-        
+
         <div>
           <label for="email" class="block text-sm font-semibold text-slate-700 mb-1">E-mail Institucional</label>
           <div class="relative">
-            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 material-symbols-outlined text-lg">mail</span>
-            <input 
-              type="email" 
-              id="email"
-              formControlName="email" 
-              placeholder="nome.sobrenome@cehap.pb.gov.br"
+            <span
+              class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 material-symbols-outlined text-lg">mail</span>
+            <input type="email" id="email" formControlName="email" placeholder="nome.sobrenome@cehap.pb.gov.br"
               class="block w-full pl-10 pr-3 py-2.5 border border-slate-300 rounded-lg text-slate-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors sm:text-sm outline-none placeholder-slate-400">
           </div>
           @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
-            <span class="text-xs text-red-500 mt-1 block">Insira um e-mail válido.</span>
+          <span class="text-xs text-red-500 mt-1 block">Insira um e-mail válido.</span>
           }
         </div>
 
         <div>
           <label for="password" class="block text-sm font-semibold text-slate-700 mb-1">Senha de Acesso</label>
           <div class="relative">
-            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 material-symbols-outlined text-lg">lock</span>
-            <input 
-              type="password" 
-              id="password"
-              formControlName="password" 
-              placeholder="••••••••"
+            <span
+              class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 material-symbols-outlined text-lg">lock</span>
+            <input type={{passwordVisibility}} id="password" formControlName="password" placeholder="••••••••"
               class="block w-full pl-10 pr-3 py-2.5 border border-slate-300 rounded-lg text-slate-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors sm:text-sm outline-none placeholder-slate-400">
+            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 material-symbols-outlined text-lg"
+              (click)="tooglePasswordVisibility()">{{passwordVisibilityIcon}}</span>
           </div>
         </div>
 
         <div class="flex items-center justify-between text-sm pt-1">
           <label class="flex items-center text-slate-600 font-medium cursor-pointer select-none">
-            <input 
-              type="checkbox" 
-              formControlName="rememberMe" 
+            <input type="checkbox" formControlName="rememberMe"
               class="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer mr-2">
             Lembrar meu acesso
           </label>
-          
+
           <a href="#" class="font-bold text-blue-600 hover:text-blue-700 hover:underline transition-colors">
             Esqueci a senha
           </a>
         </div>
 
         <div class="pt-4">
-          <button 
-            type="submit" 
-            [disabled]="loginForm.invalid || isLoading()"
+          <button type="submit" [disabled]="loginForm.invalid || isLoading()"
             class="w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
-            
+
             @if (isLoading()) {
-              <span class="material-symbols-outlined animate-spin text-[18px]">progress_activity</span>
-              Entrando...
+            <span class="material-symbols-outlined animate-spin text-[18px]">progress_activity</span>
+            Entrando...
             } @else {
-              Entrar no Sistema
-              <span class="material-symbols-outlined text-sm">login</span>
+            Entrar no Sistema
+            <span class="material-symbols-outlined text-sm">login</span>
             }
 
           </button>
@@ -86,8 +80,10 @@
 
         <div class="text-center mt-6">
           <p class="text-sm text-slate-600">
-            Ainda não tem conta? 
-            <a routerLink="/cadastro" class="font-bold text-blue-600 hover:text-blue-500 hover:underline transition-colors">Solicite seu acesso</a>
+            Ainda não tem conta?
+            <a routerLink="/cadastro"
+              class="font-bold text-blue-600 hover:text-blue-500 hover:underline transition-colors">Solicite seu
+              acesso</a>
           </p>
         </div>
 
