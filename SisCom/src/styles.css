@@ -2,8 +2,18 @@
 
 @import 'tailwindcss';
 
-.material-symbols-outlined {
-  font-family: 'Material Symbols Outlined'; /* Garante que a fonte será aplicada */
+@theme {
+  --font-sans: 'Inter', sans-serif;
+}
+
+/* 🌟 GARANTIA GLOBAL: Força inputs, botões e textos a usarem a fonte certa */
+* {
+  font-family: 'Inter', sans-serif !important;
+}
+
+.material-symbols-outlined, 
+.material-symbols-outlined * {
+  font-family: 'Material Symbols Outlined' !important; /* Mantém os ícones funcionando */
   font-variation-settings:
     'FILL' 0,
     'wght' 400,
