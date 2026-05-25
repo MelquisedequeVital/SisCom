@@ -17,12 +17,12 @@ export class MeetingModalComponent implements OnInit {
   protected meetingService = inject(MeetingService);
   protected departmentService = inject(DepartmentService);
   protected userService = inject(UserService);
+  
   @Input() isManager: boolean = false;
 
   initialDate = input<string>(''); 
   closeModal = output<void>();
-
-  meetingData = input<any | null >(null);
+  meetingData = input<any | null>(null);
 
   meetingForm = this.fb.group({
     title: ['', [Validators.required, Validators.minLength(5)]],
@@ -35,8 +35,24 @@ export class MeetingModalComponent implements OnInit {
   ngOnInit(): void {
     this.userService.loadUsers(); 
     
-    let dataForm = '';
+    const existingMeeting = this.meetingData();
+
+    // 🌟 SE A REUNIÃO JÁ EXISTIR: Carrega os dados dela no formulário para liberar a exclusão/edição
+    if (existingMeeting) {
+      const startIso = new Date(existingMeeting.startTime).toISOString().substring(0, 16);
+      const endIso = new Date(existingMeeting.endTime).toISOString().substring(0, 16);
+
+      this.meetingForm.patchValue({
+        title: existingMeeting.title,
+        departmentId: existingMeeting.departmentId || existingMeeting.department?.id,
+        startTime: startIso,
+        endTime: endIso,
+        isRemote: existingMeeting.isRemote || false
+      });
+      return; // Sai da função aqui pois já carregou os dados reais
+    }
     
+    let dataForm = '';
     if (this.initialDate() && this.initialDate().trim() !== '') {
       dataForm = this.initialDate();
     } else {
@@ -57,10 +73,8 @@ export class MeetingModalComponent implements OnInit {
   handleSchedule(): void {
     if (this.meetingForm.invalid) return;
 
-  // 1. Busca o primeiro gerente real disponível vindo lá dos seus INITIAL_USERS do mock
     const managerFromMock = this.userService.users().find(u => u.isManager === true);
 
-  // 2. Se por acaso o mock sumir da memória, usamos um fallback micro e simplificado de segurança
     const defaultOrganizer: User = managerFromMock || {
       id: 'SIS-002',
       name: 'Ludmilla Maroja',
@@ -74,22 +88,20 @@ export class MeetingModalComponent implements OnInit {
       department: { id: 'd2', name: 'Recursos Humanos', code: 'SERH' }
     };
 
-  // 3. Monta o payload limpo e perfeitamente tipado
     const newMeeting = {
       title: this.meetingForm.value.title!,
       departmentId: this.meetingForm.value.departmentId!,
       startTime: new Date(this.meetingForm.value.startTime!),
       endTime: new Date(this.meetingForm.value.endTime!),
       isRemote: this.meetingForm.value.isRemote ?? false,
-      
       organizer: defaultOrganizer, 
       participants: [] as User[], 
       meetingLink: this.meetingForm.value.isRemote ?? false
     };
 
-    // salva no Service
     this.meetingService.scheduleMeeting(newMeeting).subscribe({
       next: () => {
+        this.meetingService.loadMeetings(); // Garante o recarregamento imediato
         this.closeModal.emit();
       },
       error: () => {
@@ -98,17 +110,23 @@ export class MeetingModalComponent implements OnInit {
       }
     });
   }
+
   handleDelete(): void {
     const meeting = this.meetingData();
 
-    if (!meeting || !meeting.id) return;
+    if (!meeting || !meeting.id) {
+      console.error('Erro: Nenhuma reunião ou ID encontrado para exclusão.', meeting);
+      return;
+    }
 
     if (confirm('Tem certeza que deseja cancelar esta reunião?')) {
       this.meetingService.cancelMeeting(meeting.id).subscribe({
         next: () => {
+          this.meetingService.loadMeetings(); // Atualiza a grade do calendário na hora
           this.closeModal.emit();
         },
-        error: () => {
+        error: (err) => {
+          console.error('Erro ao deletar reunião via API:', err);
           this.meetingService.loadMeetings(); 
           this.closeModal.emit();
         }

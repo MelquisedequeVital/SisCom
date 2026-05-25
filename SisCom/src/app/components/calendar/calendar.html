@@ -61,6 +61,7 @@
     <app-meeting-modal 
         [initialDate]="selectedDateForMeeting() ? selectedDateForMeeting()!.toISOString().split('T')[0] : ''"
         [meetingData]="selectedMeeting()" 
+        [isManager]="isManager()"
         (closeModal)="isModalOpen.set(false)"
     />
   }
