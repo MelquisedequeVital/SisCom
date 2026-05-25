@@ -53,7 +53,6 @@ export class Dashboard implements OnInit {
     ).length;
   });
 
-  // 🌟 CORRIGIDO: Agora varrendo a propriedade certa e integrando com o Mock da Ludmilla/Carlos
   public totalMeetingsScheduled = computed(() => {
     const user = this.currentUser();
     if (!user) return 0;
@@ -97,7 +96,7 @@ export class Dashboard implements OnInit {
     return deptsIdSet.size;
   });
 
-  // 🌟 ADICIONADO: Força o carregamento dos dados direto na construção do componente
+  // força o carregamento dos dados direto na construção do componente
   constructor() {
     this.chatService.loadChats();
     this.meetingService.loadMeetings();
@@ -105,7 +104,7 @@ export class Dashboard implements OnInit {
   }
 
   ngOnInit() : void {
-    // Mantém as chamadas aqui por garantia de ciclo de vida do Angular
+    //mantém as chamadas aqui por garantia de ciclo de vida do Angular
     this.chatService.loadChats();
     this.meetingService.loadMeetings();
     this.departmentService.loadDepartments();

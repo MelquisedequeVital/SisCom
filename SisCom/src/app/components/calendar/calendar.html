@@ -36,7 +36,7 @@
       <div 
         [class.bg-slate-50]="!cell.dayNumber" 
         [class.bg-white]="cell.dayNumber"
-        [class.hover:bg-blue-50/40]="cell.dayNumber"
+        [class.hover:bg-blue-50]="cell.dayNumber && isManager()" [class.cursor-pointer]="cell.dayNumber && isManager()"
         class="p-2 transition-colors min-h-[115px] flex flex-col justify-between relative group cursor-pointer"
         (click)="cell.dayNumber && openMeetingModel(cell.fullDate)"
       >

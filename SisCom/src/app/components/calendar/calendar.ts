@@ -3,6 +3,7 @@ import { MeetingService } from '../../services/meeting.service';
 import { DepartmentService } from '../../services/department.service';
 import { UserService } from '../../services/user.service';
 import { MeetingModalComponent } from './meeting-modal/meeting-modal';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-calendar',
@@ -15,10 +16,14 @@ export class Calendar implements OnInit {
   protected meetingService = inject(MeetingService);
   protected departmentService = inject(DepartmentService);
   protected userService = inject(UserService);
+  private authService = inject(AuthService);
 
   public currentDate = signal<Date>(new Date());
   public isModalOpen = signal<boolean>(false);
-  public isManager = signal<boolean>(true);
+  public isManager = computed(() => {
+    const user = this.authService.currentUser();
+    return user?.isManager === true || user?.isAdmin === true;
+  });
   public selectedDateForMeeting = signal<Date | null>(null);
   private users = this.userService.users;
 
@@ -78,19 +83,18 @@ export class Calendar implements OnInit {
   }
 
   // Criamos uma variável para guardar a reunião que o usuário clicou para assistir
- // 1. Adicione essas três propriedades logo no início da sua classe Calendar:
   public selectedMeeting = signal<any | null>(null);
 
-// 2. Atualize a função para receber a reunião quando clicada:
   public openMeetingModel(dateStr: string = '', meeting: any = null): void {
-  // Se clicou em um bloco de reunião que já existe: abre para qualquer um ver!
+  // Se clicou em um bloco de reunião que já existe: abre para qualquer um
     if (meeting) {
       this.selectedMeeting.set(meeting);
+      this.selectedDateForMeeting.set(null);
       this.isModalOpen.set(true);
       return;
     }
 
-  // Se clicou no quadrado vazio para criar: só deixa passar se for gerente!
+  // Se clicou no quadrado vazio para criar: só cria se for gerente
     if (!this.isManager()) return;
 
     this.selectedMeeting.set(null); // Limpa para vir o formulário em branco
