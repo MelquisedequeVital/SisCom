@@ -13,5 +13,6 @@ export interface User {
     isManager: boolean;
     managedDepartment?: Department;
     chats: string[];
+    meetings?: string[]
     
 }
