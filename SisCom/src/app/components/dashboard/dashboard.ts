@@ -24,6 +24,26 @@ export class Dashboard implements OnInit {
 
   public currentUser = this.authService.currentUser;
 
+  public isManager = computed(() => {
+    const user = this.currentUser();
+    return user?.isManager === true || user?.isAdmin === true;
+  });
+
+  public isDepartmentsExpanded = signal<boolean>(false);
+
+  public monitoredDepartmentsList = computed(() => {
+    const user = this.currentUser();
+    if (!user || (!user.isManager && !user.isAdmin)) return [];
+    const monitored = [];
+    if (user.managedDepartment) {
+      monitored.push(user.managedDepartment);
+    } 
+    else if (user.department) {
+      monitored.push(user.department);
+    }
+    return monitored;
+  });
+
   public totalChats = computed(() => {
     const userId = this.currentUser()?.id;
     if (!userId) return 0;
@@ -77,5 +97,9 @@ export class Dashboard implements OnInit {
 
   public navigateTo(route: string) : void {
     this.router.navigate([`/${route}`]);
+  }
+
+  public toggleDepartments(): void {
+    this.isDepartmentsExpanded.update(val => !val);
   }
 }

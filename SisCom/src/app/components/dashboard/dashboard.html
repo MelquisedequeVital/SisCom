@@ -1,53 +1,100 @@
 <div class="max-w-[1200px] mx-auto px-5 bg-[#f8f9fa] min-h-screen">
   <header class="flex flex-col sm:flex-row justify-between items-center py-6 border-b-2 border-[#c4c5d5] gap-4">
     <div class="flex items-center gap-3">
-      <span class="text-3xl">💬</span>
+      <span class="material-symbols-outlined text-3xl text-[#002068]">forum</span>
       <h1 class="text-2xl font-black text-[#002068] tracking-tight">SisCom</h1>
     </div>
     <nav class="flex gap-6">
-      <a (click)="navigateTo('relatorio')" class="text-[#003399] font-bold text-sm uppercase tracking-wider cursor-pointer border-b-2 border-[#003399] pb-1">Painel Gerencial</a>
+      <a (click)="navigateTo('')"
+        class="text-[#003399] font-bold text-sm uppercase tracking-wider cursor-pointer border-b-2 border-[#003399] pb-1">Painel
+        Principal</a>
     </nav>
   </header>
 
   <main class="mt-10">
     <div class="flex flex-col md:flex-row justify-between items-start flex-wrap gap-4 mb-8">
       <div>
-        <h2 class="text-2xl font-bold text-[#002068]">Painel do Gerente — Resumo de Indicadores</h2>
-        <p class="text-[#444653] text-sm mt-1">Visão analítica gerada automaticamente através dos microsserviços integrados do SisCom.</p>
+        <h2 class="text-2xl font-bold text-[#002068]">Painel Principal — Resumo de Atividades</h2>
+        <p class="text-[#444653] text-sm mt-1">Visão geral das suas comunicações, chamados e compromissos no SisCom.</p>
       </div>
-      <button (click)="navigateTo('agendar-reuniao')" class="bg-[#002068] hover:bg-[#003399] text-white font-semibold py-2.5 px-5 rounded-[4px] shadow-sm transition-colors text-sm flex items-center gap-2">
-        <span>📅</span> Agendar Nova Reunião
-      </button>
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-8">
-      
-      <div (click)="navigateTo('chats')" class="bg-white border border-[#c4c5d5] rounded-[4px] p-6 flex items-center justify-between shadow-sm cursor-pointer hover:border-[#003399] hover:shadow-md transition-all group">
+
+      <div (click)="navigateTo('chats')"
+        class="bg-white border border-[#c4c5d5] rounded-[4px] p-6 flex items-center justify-between shadow-sm cursor-pointer hover:border-[#003399] hover:shadow-md transition-all group">
         <div class="flex items-center gap-4">
-          <span class="text-3xl p-2.5 bg-blue-50 rounded-[4px] group-hover:bg-blue-100 transition-colors">💬</span>
+          <span
+            class="material-symbols-outlined text-3xl p-2.5 bg-blue-50 text-[#002068] rounded-[4px] group-hover:bg-blue-100 transition-colors">chat</span>
           <div>
             <h3 class="text-xs font-bold text-[#444653] uppercase tracking-wider">Comunicação</h3>
             <p class="text-2xl font-extrabold text-[#002068] mt-1">Acessar Chats</p>
           </div>
         </div>
-        <span class="text-[#002068] text-2xl font-bold group-hover:translate-x-1 transition-transform">→</span>
+        <span
+          class="material-symbols-outlined text-[#002068] text-2xl font-bold group-hover:translate-x-1 transition-transform">arrow_forward</span>
       </div>
 
-      <div class="bg-white border border-[#c4c5d5] rounded-[4px] p-6 flex items-center gap-4 shadow-sm">
-        <span class="text-3xl p-2.5 bg-blue-50 rounded-[4px]">📅</span>
-        <div>
-          <h3 class="text-xs font-bold text-[#444653] uppercase tracking-wider">Reuniões Agendadas</h3>
-          <p class="text-3xl font-extrabold text-[#002068] mt-1">{{ totalMeetingsScheduled() }}</p>
+      <div (click)="navigateTo('meetings')"
+        class="bg-white border border-[#c4c5d5] rounded-[4px] p-6 flex items-center justify-between shadow-sm cursor-pointer hover:border-[#003399] hover:shadow-md transition-all group">
+        <div class="flex items-center gap-4">
+          <span
+            class="material-symbols-outlined text-3xl p-2.5 bg-blue-50 text-[#002068] rounded-[4px] group-hover:bg-blue-100 transition-colors">event</span>
+          <div>
+            <h3 class="text-xs font-bold text-[#444653] uppercase tracking-wider">Reuniões Agendadas</h3>
+            <p class="text-2xl font-extrabold text-[#002068] mt-1">{{ totalMeetingsScheduled() }}</p>
+          </div>
         </div>
+        <span
+          class="material-symbols-outlined text-[#002068] text-2xl font-bold group-hover:translate-x-1 transition-transform">arrow_forward</span>
       </div>
+      @if (isManager()) {
+      <div class="flex flex-col gap-2">
 
-      <div class="bg-white border border-[#c4c5d5] rounded-[4px] p-6 flex items-center gap-4 shadow-sm">
-        <span class="text-3xl p-2.5 bg-slate-100 rounded-[4px]">🏢</span>
-        <div>
-          <h3 class="text-xs font-bold text-[#444653] uppercase tracking-wider">Setores Monitorados</h3>
-          <p class="text-3xl font-extrabold text-[#002068] mt-1">{{ totalActiveDepartments() }}</p>
+        <div (click)="toggleDepartments()"
+          class="bg-white border border-[#c4c5d5] rounded-[4px] p-6 flex items-center justify-between shadow-sm cursor-pointer hover:border-[#003399] hover:shadow-md transition-all group">
+
+          <div class="flex items-center gap-4">
+            <span
+              class="material-symbols-outlined text-3xl p-2.5 bg-slate-100 text-[#002068] rounded-[4px] group-hover:bg-blue-50 transition-colors">domain</span>
+            <div>
+              <h3 class="text-xs font-bold text-[#444653] uppercase tracking-wider">Setores Monitorados</h3>
+              <p class="text-3xl font-extrabold text-[#002068] mt-1">{{ monitoredDepartmentsList().length }}</p>
+            </div>
+          </div>
+
+          <span class="material-symbols-outlined text-[#002068] text-2xl font-bold transition-transform duration-300"
+            [class.rotate-90]="isDepartmentsExpanded()">
+            arrow_forward
+          </span>
+
         </div>
+
+        <div class="grid transition-[grid-template-rows] duration-300 ease-in-out"
+          [class.grid-rows-[0fr]]="!isDepartmentsExpanded()" [class.grid-rows-[1fr]]="isDepartmentsExpanded()">
+          <div class="overflow-hidden">
+
+            <div class="bg-white border border-[#c4c5d5] rounded-[4px] p-4 shadow-sm flex flex-col mt-1">
+              <h4 class="text-xs font-bold text-[#444653] uppercase tracking-wider mb-2 border-b pb-2">Departamentos
+              </h4>
+
+              <ul class="flex flex-col max-h-48 overflow-y-auto pr-2">
+                @for (dept of monitoredDepartmentsList(); track dept.id) {
+                <li class="py-2 border-b border-gray-100 last:border-0 text-sm text-gray-700 flex items-center gap-2">
+                  <span class="font-bold text-[#002068]">{{ dept.code }}</span>
+                  <span class="truncate">{{ dept.name }}</span>
+                </li>
+                } @empty {
+                <li class="py-2 text-sm text-gray-500 italic">Nenhum setor sendo monitorado.</li>
+                }
+              </ul>
+
+            </div>
+          </div>
+        </div>
+
       </div>
+      }
 
     </div>
   </main>

@@ -56,7 +56,7 @@ export class Login {
         this.isLoading.set(false);
         console.log('Utilizador autenticado com sucesso:', user);
         
-       this.router.navigate([user.isAdmin ? '/admin' : '/chats']); 
+       this.router.navigate([user.isAdmin ? '/admin' : '/dashboard']); 
       },
       error: (err) => {
         this.isLoading.set(false);
