@@ -50,7 +50,6 @@ export class ActiveChatComponent {
   }
 
   public voltarListagem(): void {
-    // Atenção: Se a sua rota base de listagem não for apenas '/chats', atualize aqui!
     this.router.navigate(['/chats']); 
   }
 }

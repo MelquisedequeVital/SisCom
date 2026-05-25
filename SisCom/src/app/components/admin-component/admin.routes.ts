@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { AdminComponent } from './admin.component';
+import { InboxComponent } from '../inbox-component/inbox-component';
 
 export const ADMIN_ROUTES: Routes = [
   {
@@ -16,7 +17,8 @@ export const ADMIN_ROUTES: Routes = [
       },
       {
         path: 'chats',
-        loadChildren: () => import('./chat-management/chat-management.routes').then(a => a.CHAT_ROUTES),
+        // loadChildren: () => import('./chat-management/chat-management.routes').then(a => a.CHAT_ROUTES),
+        component: InboxComponent
       },
       {
         path:'departments',
