@@ -16,11 +16,6 @@ export const ADMIN_ROUTES: Routes = [
         loadComponent: () => import('./user-management/user-management').then(a => a.UserManagement),
       },
       {
-        path: 'chats',
-        // loadChildren: () => import('./chat-management/chat-management.routes').then(a => a.CHAT_ROUTES),
-        component: InboxComponent
-      },
-      {
         path:'departments',
         loadComponent: () => import('./department-management/department-management').then(a => a.DepartmentManagement)
       }
