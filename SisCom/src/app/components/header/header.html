@@ -2,13 +2,13 @@
     <div class="flex items-center gap-4">
         <span class="text-xl font-bold tracking-wider text-[#002B93]">SISCOM</span>
 
-        @if (currentUser()?.isAdmin || currentUser()?.isManager) {
-        <a routerLink="/dashboard" 
-           class="flex items-center gap-1.5 text-sm font-semibold text-[#002B93] hover:text-[#001D66] bg-blue-50/60 hover:bg-blue-50 px-3 py-1.5 rounded-md transition-all cursor-pointer">
+
+        <a routerLink="/dashboard"
+            class="flex items-center gap-1.5 text-sm font-semibold text-[#002B93] hover:text-[#001D66] bg-blue-50/60 hover:bg-blue-50 px-3 py-1.5 rounded-md transition-all cursor-pointer">
             <span class="material-symbols-outlined text-base">dashboard</span>
             Dashboard
         </a>
-        }
+
 
         @if (isAdminRoute()) {
         <span class="text-xs px-2 py-0.5 bg-gray-100 text-gray-500 rounded font-mono font-semibold">
