@@ -21,7 +21,6 @@ export class Dashboard implements OnInit {
   private router = inject(Router);
 
   isLoading = signal<boolean>(false);
-
   public currentUser = this.authService.currentUser;
 
   public isManager = computed(() => {
@@ -54,13 +53,22 @@ export class Dashboard implements OnInit {
     ).length;
   });
 
+  // 🌟 CORRIGIDO: Agora varrendo a propriedade certa e integrando com o Mock da Ludmilla/Carlos
   public totalMeetingsScheduled = computed(() => {
-    const userId = this.currentUser()?.id;
-    if (!userId) return 0;
+    const user = this.currentUser();
+    if (!user) return 0;
 
-    return this.meetingService.meetings().filter(meeting => 
-      (meeting as any).organizerId === userId || 
-      ((meeting as any).participants || []).some((p: any) => p?.id === userId || p === userId)
+    const allMeetings = this.meetingService.meetings();
+
+    // Se for Admin ou Gerente, ele vê todas as reuniões agendadas no sistema/departamento
+    if (user.isAdmin || user.isManager) {
+      return allMeetings.length;
+    }
+
+    // Se for usuário comum, vê apenas as que ele organizou ou participa
+    return allMeetings.filter(meeting => 
+      meeting.organizer?.id === user.id || 
+      (meeting.participants || []).some((p: any) => p?.id === user.id)
     ).length;
   });
 
@@ -89,7 +97,15 @@ export class Dashboard implements OnInit {
     return deptsIdSet.size;
   });
 
+  // 🌟 ADICIONADO: Força o carregamento dos dados direto na construção do componente
+  constructor() {
+    this.chatService.loadChats();
+    this.meetingService.loadMeetings();
+    this.departmentService.loadDepartments();
+  }
+
   ngOnInit() : void {
+    // Mantém as chamadas aqui por garantia de ciclo de vida do Angular
     this.chatService.loadChats();
     this.meetingService.loadMeetings();
     this.departmentService.loadDepartments();

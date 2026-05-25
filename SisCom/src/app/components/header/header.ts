@@ -1,12 +1,12 @@
 import { Component, inject, signal, OnInit, effect } from '@angular/core';
-import { Router, NavigationEnd } from '@angular/router';
+import { Router, RouterModule, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { AuthService } from '../../services/auth.service'; 
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [],
+  imports: [RouterModule],
   templateUrl: './header.html',
 })
 export class Header implements OnInit {
