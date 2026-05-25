@@ -1,15 +1,17 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink} from '@angular/router';
 import { AuthService } from '../../services/auth.service'; 
+
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './login.html'
 })
+
 export class Login {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
@@ -17,13 +19,25 @@ export class Login {
   public loginForm: FormGroup;
   public isLoading = signal<boolean>(false);
   public errorMessage = signal<string | null>(null);
+  public passwordVisibility = 'password';
+  public passwordVisibilityIcon = 'visibility'
 
   constructor() {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(3)]], 
+      password: ['', Validators.required], 
       rememberMe: [false]
     });
+  }
+
+  tooglePasswordVisibility(){
+    if(this.passwordVisibility == "password"){
+      this.passwordVisibility = 'text'
+      this.passwordVisibilityIcon = 'visibility_off'
+    } else {
+      this.passwordVisibility = 'password';
+      this.passwordVisibilityIcon = 'visibility'
+    }
   }
 
   public onSubmit(): void {
@@ -42,7 +56,7 @@ export class Login {
         this.isLoading.set(false);
         console.log('Utilizador autenticado com sucesso:', user);
         
-        this.router.navigate(['/chats']); 
+       this.router.navigate([user.isAdmin ? '/admin' : '/chats']); 
       },
       error: (err) => {
         this.isLoading.set(false);

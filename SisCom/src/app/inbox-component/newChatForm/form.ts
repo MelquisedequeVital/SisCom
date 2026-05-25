@@ -29,8 +29,9 @@ export class Form {
   form = this.fb.group({
     sector: ['', Validators.required],
     motivo: ['', [Validators.required, Validators.minLength(10)]],
+    motivo: ['', [Validators.required]],
     urgencia: ['moderate', Validators.required],
-    mensagem: ['', [Validators.required, Validators.minLength(10)]]
+    mensagem: ['', [Validators.required]]
   });
 
   enviarSolicitacao() {
@@ -40,11 +41,9 @@ export class Form {
     const requesterId = this.loggedInUserId();
     const rawValues = this.form.value;
 
-    // 1. PRIMEIRO PASSO: Valida o usuário logado com o método seguro
     this.userServ.getUserById(requesterId).subscribe({
       next: (currentUser) => {
 
-        // Se a API retornar indefinido/nulo, o usuário não existe no banco
         if (!currentUser) {
           this.enviando.set(false);
           alert('Erro de Autenticação: O usuário solicitante não foi encontrado no sistema.');
@@ -52,8 +51,9 @@ export class Form {
         }
 
         const targetUser = this.userServ.users().find(
+        const targetUser = this.userServ.users().filter(
           u => u.department?.id === rawValues.sector && u.id !== requesterId
-        );
+        ).reduce((u, uc) => u.chats.length < uc.chats.length ? u : uc);
 
         if (!targetUser) {
           this.enviando.set(false);
@@ -61,6 +61,7 @@ export class Form {
           return;
         }
 
+  
         const novaSolicitacao: Omit<Chat, 'id'> = {
           subject: rawValues.motivo!,
           urgency: rawValues.urgencia as 'low' | 'moderate' | 'high',
@@ -75,7 +76,7 @@ export class Form {
               content: rawValues.mensagem! || 'Nova solicitação aberta.',
               senderID: requesterId,
               timestamp: new Date(),
-              isRead: true // O remetente já inicia com a mensagem lida por ele
+              isRead: true 
             }
           ]
         };

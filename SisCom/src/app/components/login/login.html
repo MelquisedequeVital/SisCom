@@ -1,82 +1,103 @@
-<div class="min-h-screen flex flex-col items-center justify-center bg-slate-100 font-sans antialiased px-4">
-  
-  <div class="bg-white w-full max-w-[400px] p-8 rounded-xl shadow-md border border-slate-200">
-    
-    <div class="text-center mb-6">
-      <h1 class="text-3xl font-extrabold text-blue-700 tracking-tight">
-        SisCom CEHAP
-      </h1>
-      <p class="text-sm text-slate-500 mt-1 font-medium">
-        Acesse a plataforma com suas credenciais
-      </p>
-    </div>
+<div class="min-h-screen bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8 font-sans">
 
-    @if (errorMessage()) {
-      <div class="mb-5 bg-[#ffdad6] text-[#93000a] text-sm font-semibold p-3 rounded-lg border border-[#ba1a1a] flex items-center gap-2">
+  <div class="sm:mx-auto sm:w-full sm:max-w-md text-center">
+    <div class="mx-auto h-16 w-16 bg-blue-600 rounded-full flex items-center justify-center shadow-md">
+      <span class="text-white font-bold text-2xl">SC</span>
+    </div>
+    <h2 class="mt-6 text-blue-700 text-center text-3xl font-extrabold tracking-tight">
+      SisCom CEHAP
+    </h2>
+    <p class="mt-2 text-center text-sm text-slate-600 font-medium">
+      Acesso ao Sistema Institucional
+    </p>
+  </div>
+
+  <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+    <div
+      class="bg-white py-8 px-4 shadow-xl shadow-slate-200/50 sm:rounded-2xl sm:px-10 border border-slate-100 relative overflow-hidden">
+
+      @if (errorMessage()) {
+      <div
+        class="mb-5 bg-[#ffdad6] text-[#93000a] text-sm font-semibold p-3 rounded-lg border border-[#ba1a1a] flex items-center gap-2">
         <span class="material-symbols-outlined text-[18px]">error</span>
         {{ errorMessage() }}
       </div>
-    }
+      }
 
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-5">
-      
-      <div>
-        <label for="email" class="block text-sm font-semibold text-slate-700 mb-1">E-mail</label>
-        <input 
-          type="email" 
-          id="email" 
-          formControlName="email" 
-          placeholder="nome.sobrenome@cehap.pb.gov.br"
-          class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 bg-white text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100 transition-all"
-        >
-      </div>
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-5 relative z-10">
 
-      <div>
-        <label for="password" class="block text-sm font-semibold text-slate-700 mb-1">Senha</label>
-        <input 
-          type="password" 
-          id="password" 
-          formControlName="password" 
-          placeholder="••••••••"
-          class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 bg-white text-slate-900 placeholder-slate-400 text-sm focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-100 transition-all"
-        >
-      </div>
+        <div>
+          <label for="email" class="block text-sm font-semibold text-slate-700 mb-1">E-mail Institucional</label>
+          <div class="relative">
+            <span
+              class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 material-symbols-outlined text-lg">mail</span>
+            <input type="email" id="email" formControlName="email" placeholder="nome.sobrenome@cehap.pb.gov.br"
+              class="block w-full pl-10 pr-3 py-2.5 border border-slate-300 rounded-lg text-slate-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors sm:text-sm outline-none placeholder-slate-400">
+          </div>
+          @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
+          <span class="text-xs text-red-500 mt-1 block">Insira um e-mail válido.</span>
+          }
+        </div>
 
-      <div class="flex items-center justify-between text-sm pt-1">
-        <label class="flex items-center text-slate-600 font-medium cursor-pointer select-none">
-          <input 
-            type="checkbox" 
-            formControlName="rememberMe" 
-            class="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer mr-2"
-          >
-          Lembrar-me
-        </label>
+        <div>
+          <label for="password" class="block text-sm font-semibold text-slate-700 mb-1">Senha de Acesso</label>
+          <div class="relative">
+            <span
+              class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 material-symbols-outlined text-lg">lock</span>
+            <input type={{passwordVisibility}} id="password" formControlName="password" placeholder="••••••••"
+              class="block w-full pl-10 pr-3 py-2.5 border border-slate-300 rounded-lg text-slate-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors sm:text-sm outline-none placeholder-slate-400">
+            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 material-symbols-outlined text-lg"
+              (click)="tooglePasswordVisibility()">{{passwordVisibilityIcon}}</span>
+          </div>
+        </div>
 
-        <a href="#" class="font-semibold text-blue-600 hover:text-blue-700 hover:underline transition-colors">
-          Esqueci minha senha
-        </a>
-      </div>
+        <div class="flex items-center justify-between text-sm pt-1">
+          <label class="flex items-center text-slate-600 font-medium cursor-pointer select-none">
+            <input type="checkbox" formControlName="rememberMe"
+              class="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer mr-2">
+            Lembrar meu acesso
+          </label>
 
-      <div class="pt-2">
-        <button 
-          type="submit" 
-          [disabled]="loginForm.invalid || isLoading()"
-          class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg text-sm shadow-sm transition-colors duration-150 disabled:bg-slate-300 disabled:text-slate-500 disabled:cursor-not-allowed flex justify-center items-center gap-2"
-        >
-          @if (isLoading()) {
+          <a href="#" class="font-bold text-blue-600 hover:text-blue-700 hover:underline transition-colors">
+            Esqueci a senha
+          </a>
+        </div>
+
+        <div class="pt-4">
+          <button type="submit" [disabled]="loginForm.invalid || isLoading()"
+            class="w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+
+            @if (isLoading()) {
             <span class="material-symbols-outlined animate-spin text-[18px]">progress_activity</span>
             Entrando...
-          } @else {
-            Entrar
-          }
-        </button>
-      </div>
+            } @else {
+            Entrar no Sistema
+            <span class="material-symbols-outlined text-sm">login</span>
+            }
 
-    </form>
+          </button>
+        </div>
 
-    <div class="mt-6 text-center text-xs text-slate-400 border-t border-slate-100 pt-4">
-      &copy; 2026 CEHAP. Todos os direitos reservados.
+        <div class="text-center mt-6">
+          <p class="text-sm text-slate-600">
+            Ainda não tem conta?
+            <a routerLink="/cadastro"
+              class="font-bold text-blue-600 hover:text-blue-500 hover:underline transition-colors">Solicite seu
+              acesso</a>
+          </p>
+        </div>
+
+      </form>
     </div>
 
+    <div class="mt-8 text-center px-4">
+      <div class="flex items-center justify-center gap-1 text-slate-500 font-semibold text-xs mb-2">
+        <span class="material-symbols-outlined text-[14px]">verified_user</span>
+        Ambiente Seguro e Monitorado
+      </div>
+      <p class="text-xs text-slate-400 leading-relaxed">
+        Sistema em conformidade com a <strong>LGPD</strong>. Dados criptografados para uso profissional.
+      </p>
+    </div>
   </div>
 </div>
