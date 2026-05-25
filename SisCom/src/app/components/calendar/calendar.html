@@ -1,0 +1,67 @@
+<div class="max-w-[1200px] mx-auto px-5 bg-[#f8f9fa] min-h-screen pb-12 font-sans text-[#191c1d]">
+  
+  <header class="flex flex-col sm:flex-row justify-between items-center py-6 border-b-2 border-[#c4c5d5] gap-4 mb-6">
+    <div class="flex items-center gap-6">
+      <div class="flex items-center gap-2">
+        <span class="text-3xl">💬</span>
+        <h1 class="text-2xl font-black text-[#002068] tracking-tight">SisCom</h1>
+      </div>
+      
+      <div class="flex items-center bg-white border border-[#c4c5d5] rounded-[4px] shadow-sm overflow-hidden">
+        <button (click)="previousMonth()" class="px-4 py-1.5 hover:bg-slate-50 border-r border-[#c4c5d5] text-lg font-bold text-[#444653] transition-colors cursor-pointer">
+          ‹
+        </button>
+        <span class="px-5 py-1.5 font-bold text-sm text-[#002068] min-w-[160px] text-center uppercase tracking-wider select-none">
+          {{ months[currentDate().getMonth()] }} {{ currentDate().getFullYear() }}
+        </span>
+        <button (click)="nextMonth()" class="px-4 py-1.5 hover:bg-slate-50 text-lg font-bold text-[#444653] transition-colors cursor-pointer">
+          ›
+        </button>
+      </div>
+    </div>
+
+    @if (isManager()) {
+      <button (click)="openMeetingModel('')" class="bg-[#002068] hover:bg-[#003399] text-white font-semibold py-2.5 px-5 rounded-[4px] shadow-sm transition-colors text-sm flex items-center gap-2 cursor-pointer">
+        <span class="text-lg font-bold">+</span> Criar Reunião
+      </button>
+    }
+  </header>
+
+  <div class="grid grid-cols-7 gap-px bg-[#c4c5d5] border border-[#c4c5d5] rounded-t-[4px] text-center font-bold text-xs text-[#444653] uppercase tracking-wider bg-white py-3 select-none">
+    <div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
+  </div>
+
+  <div class="grid grid-cols-7 gap-px bg-[#c4c5d5] border-x border-b border-[#c4c5d5] rounded-b-[4px] overflow-hidden min-h-[600px] bg-[#c4c5d5]">
+    @for (cell of calendarDays(); track $index) {
+      <div 
+        [class.bg-slate-50]="!cell.dayNumber" 
+        [class.bg-white]="cell.dayNumber"
+        [class.hover:bg-blue-50/40]="cell.dayNumber"
+        class="p-2 transition-colors min-h-[115px] flex flex-col justify-between relative group cursor-pointer"
+        (click)="cell.dayNumber && openMeetingModel(cell.fullDate)"
+      >
+        <span class="text-xs font-bold text-[#444653] block mb-1 select-none">
+          {{ cell.dayNumber }}
+        </span>
+
+        <div class="flex-grow space-y-1 overflow-y-auto max-h-[85px] pr-0.5 scrollbar-thin">
+          @for (meeting of getMeetingsForDate(cell.fullDate); track meeting.id) {
+            <div 
+              (click)="$event.stopPropagation(); openMeetingModel('', meeting)"
+              class="bg-[#002068] text-white text-[11px] font-medium p-1 rounded-[2px] truncate shadow-sm hover:bg-[#003399] transition-colors border-l-2 border-l-sky-400 cursor-pointer" 
+              [title]="meeting.title"
+            >
+              ⏰ {{ meeting.title }}
+            </div>
+          }
+        </div>
+      </div>
+    } 
+  </div> @if (isModalOpen()) {
+    <app-meeting-modal 
+        [initialDate]="selectedDateForMeeting() ? selectedDateForMeeting()!.toISOString().split('T')[0] : ''"
+        [meetingData]="selectedMeeting()" 
+        (closeModal)="isModalOpen.set(false)"
+    />
+  }
+</div>

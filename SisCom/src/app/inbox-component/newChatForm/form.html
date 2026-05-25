@@ -30,7 +30,7 @@
                 @if (form.get('motivo')?.touched && form.get('motivo')?.invalid) {
                 <span class="text-[#ba1a1a] text-xs font-medium flex items-center gap-1 mt-1">
                     <span class="material-symbols-outlined text-[14px]">error</span>
-                    O motivo é obrigatório.
+                    O motivo é obrigatório e deve ser maior que 10 caracteres.
                 </span>
                 }
             </div>
@@ -57,7 +57,7 @@
                 @if (form.get('mensagem')?.touched && form.get('mensagem')?.invalid) {
                 <span class="text-[#ba1a1a] text-xs font-medium flex items-center gap-1 mt-1">
                     <span class="material-symbols-outlined text-[14px]">error</span>
-                    A mensagem inicial é obrigatória.
+                    A mensagem inicial é obrigatória e deve ter pelo menos 10 caracteres.
                 </span>
                 }
             </div>

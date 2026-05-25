@@ -1,0 +1,147 @@
+<div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+  
+  <div class="bg-white border border-[#c4c5d5] rounded-[4px] p-6 w-full max-w-[520px] shadow-2xl animate-fade-in">
+    
+    @if (meetingData()) {
+      <div class="flex justify-between items-center mb-4 border-b border-[#c4c5d5] pb-3">
+        <h2 class="text-xl font-bold text-[#002068]">📋 Detalhes da Reunião</h2>
+        <button (click)="closeModal.emit()" class="text-xl font-bold text-[#747684] hover:text-[#191c1d] cursor-pointer">✕</button>
+      </div>
+
+      <div class="space-y-4 py-2">
+        <div class="flex flex-col gap-1">
+          <span class="text-xs font-bold text-[#444653] uppercase tracking-wider">Pauta</span>
+          <p class="text-base font-semibold text-[#191c1d] bg-slate-50 p-2.5 rounded-[4px] border border-slate-200">
+            {{ meetingData().title }}
+          </p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div class="flex flex-col gap-1">
+            <span class="text-xs font-bold text-[#444653] uppercase tracking-wider">Início</span>
+            <p class="text-sm text-[#191c1d] bg-slate-50 p-2.5 rounded-[4px] border border-slate-200">
+              {{ meetingData().startTime | date: 'dd/MM/yyyy - HH:mm' }}
+            </p>
+          </div>
+          <div class="flex flex-col gap-1">
+            <span class="text-xs font-bold text-[#444653] uppercase tracking-wider">Término</span>
+            <p class="text-sm text-[#191c1d] bg-slate-50 p-2.5 rounded-[4px] border border-slate-200">
+              {{ meetingData().endTime | date: 'dd/MM/yyyy - HH:mm' }}
+            </p>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <span class="text-xs font-bold text-[#444653] uppercase tracking-wider">Organizador</span>
+          <p class="text-sm text-[#191c1d] bg-slate-50 p-2.5 rounded-[4px] border border-slate-200">
+            👤 {{ meetingData().organizer?.name || 'Não informado' }} ({{ meetingData().organizer?.email }})
+          </p>
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <span class="text-xs font-bold text-[#444653] uppercase tracking-wider">Formato</span>
+          <p class="text-sm text-[#191c1d] bg-slate-50 p-2.5 rounded-[4px] border border-slate-200">
+            {{ meetingData().isRemote ? '🌐 Remota (Online)' : '🏢 Presencial' }}
+          </p>
+        </div>
+      </div>
+
+        <div class="flex justify-end gap-3 pt-4 border-t border-[#c4c5d5] mt-6">
+        <button 
+          type="button" 
+          (click)="handleDelete()" 
+          class="px-4 py-2 text-sm font-semibold border border-[#c62828] text-[#c62828] rounded-[4px] hover:bg-red-50 transition-colors cursor-pointer"
+        >
+          Excluir Reunião
+        </button>
+        
+        <button 
+          type="button"
+          (click)="closeModal.emit()" 
+          class="px-5 py-2 text-sm font-semibold bg-[#002068] hover:bg-[#003399] text-white rounded-[4px] transition-colors shadow-sm cursor-pointer"
+        >
+          Fechar
+        </button>
+      </div>
+
+    } @else {
+      <div class="flex justify-between items-center mb-4 border-b border-[#c4c5d5] pb-3">
+        <h2 class="text-xl font-bold text-[#002068]">🗓️ Marcar Nova Reunião</h2>
+        <button (click)="closeModal.emit()" class="text-xl font-bold text-[#747684] hover:text-[#191c1d] cursor-pointer">✕</button>
+      </div>
+
+      <form [formGroup]="meetingForm" (ngSubmit)="handleSchedule()" class="space-y-5">
+        
+        <div class="flex flex-col gap-1.5">
+          <label for="title" class="text-xs font-bold text-[#444653] uppercase tracking-wider">Pauta da Discussão</label>
+          <input 
+            id="title" 
+            type="text" 
+            formControlName="title" 
+            placeholder="Ex: Alinhamento Emergencial Tecnológico"
+            class="bg-white border border-[#747684] focus:border-2 focus:border-[#003399] rounded-[4px] p-2.5 text-sm outline-none"
+          />
+          @if (meetingForm.get('title')?.touched && meetingForm.get('title')?.invalid) {
+            <span class="text-[#c62828] text-xs font-medium">A pauta precisa de pelo menos 5 caracteres.</span>
+          }
+        </div>
+
+        <div class="flex flex-col gap-1.5">
+          <label for="departmentId" class="text-xs font-bold text-[#444653] uppercase tracking-wider">Setor Envolvido</label>
+          <select 
+            id="departmentId" 
+            formControlName="departmentId"
+            class="bg-white border border-[#747684] focus:border-2 focus:border-[#003399] rounded-[4px] p-2.5 text-sm outline-none"
+          >
+            <option value="">Escolha o departamento...</option>
+            @for (dept of departmentService.departments(); track dept.id) {
+              <option [value]="dept.id">{{ dept.name }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div class="flex flex-col gap-1.5">
+            <label for="startTime" class="text-xs font-bold text-[#444653] uppercase tracking-wider">Início</label>
+            <input 
+              id="startTime" 
+              type="datetime-local" 
+              formControlName="startTime"
+              class="bg-white border border-[#747684] focus:border-2 focus:border-[#003399] rounded-[4px] p-2.5 text-sm outline-none w-full"
+            />
+          </div>
+
+          <div class="flex flex-col gap-1.5">
+            <label for="endTime" class="text-xs font-bold text-[#444653] uppercase tracking-wider">Término</label>
+            <input 
+              id="endTime" 
+              type="datetime-local" 
+              formControlName="endTime"
+              class="bg-white border border-[#747684] focus:border-2 focus:border-[#003399] rounded-[4px] p-2.5 text-sm outline-none w-full"
+            />
+          </div>
+        </div>
+        <div class="flex items-center gap-3 bg-slate-50 p-3 rounded-[4px] border border-[#c4c5d5]">
+          <input 
+            id="isRemote" 
+            type="checkbox" 
+            formControlName="isRemote"
+            class="w-4 h-4 text-[#002068] border-[#747684] rounded focus:ring-[#003399] cursor-pointer"
+          />
+          <label for="isRemote" class="text-sm font-semibold text-[#444653] cursor-pointer select-none">
+            🌐 Reunião online (Remota)
+          </label>
+        </div>
+
+        <div class="flex justify-end gap-3 pt-2 border-t border-[#c4c5d5] mt-6">
+          <button type="button" (click)="closeModal.emit()" class="px-4 py-2 text-sm font-semibold border border-[#747684] text-[#444653] rounded-[4px] hover:bg-slate-50 transition-colors">
+            Cancelar
+          </button>
+          <button type="submit" [disabled]="meetingForm.invalid" class="px-5 py-2 text-sm font-semibold bg-[#002068] hover:bg-[#003399] disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-[4px] transition-colors shadow-sm">
+            Confirmar Agendamento
+          </button>
+        </div>
+      </form>
+    }
+  </div>
+</div>

@@ -28,9 +28,7 @@ export class Form {
 
   form = this.fb.group({
     sector: ['', Validators.required],
-    // CORREÇÃO: Validadores síncronos agrupados em uma array []
     motivo: ['', [Validators.required, Validators.minLength(10)]],
-    // AJUSTE: Valor inicial alterado para 'moderate' para casar com o modelo Chat
     urgencia: ['moderate', Validators.required],
     mensagem: ['', [Validators.required, Validators.minLength(10)]]
   });
@@ -53,8 +51,6 @@ export class Form {
           return;
         }
 
-        // 2. SEGUNDO PASSO: Encontra um usuário que pertence ao departamento escolhido
-        // Ignoramos o próprio usuário logado caso ele seja do mesmo departamento
         const targetUser = this.userServ.users().find(
           u => u.department?.id === rawValues.sector && u.id !== requesterId
         );
@@ -65,18 +61,14 @@ export class Form {
           return;
         }
 
-        // 3. TERCEIRO PASSO: Monta o objeto com participantes e a primeira mensagem
-        // (Ajuste 'rawValues.mensagem' caso o nome do seu campo de texto no form seja diferente)
         const novaSolicitacao: Omit<Chat, 'id'> = {
           subject: rawValues.motivo!,
           urgency: rawValues.urgencia as 'low' | 'moderate' | 'high',
           requesterId: requesterId,
           requestedDepartmentId: rawValues.sector!,
           
-          // Adiciona os dois objetos de usuários completos à lista de participantes
           participants: [currentUser, targetUser], 
           
-          // Cria o array contendo a primeira mensagem da conversa
           messages: [
             {
               id: crypto.randomUUID(),
@@ -88,12 +80,10 @@ export class Form {
           ]
         };
 
-        // 4. QUARTO PASSO: Envia para a API (MSW) e aguarda o objeto com o ID gerado
         this.chatServ.addChat(novaSolicitacao).subscribe({
           next: (chatCriado) => {
             this.enviando.set(false);
             
-            // Redireciona o usuário diretamente para a rota do chat específico criado
             this.router.navigate(['/chats', chatCriado.id]);
           },
           error: (erro) => {
