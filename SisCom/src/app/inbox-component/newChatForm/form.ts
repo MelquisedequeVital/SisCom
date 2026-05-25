@@ -29,7 +29,6 @@ export class Form {
   form = this.fb.group({
     sector: ['', Validators.required],
     motivo: ['', [Validators.required, Validators.minLength(10)]],
-    motivo: ['', [Validators.required]],
     urgencia: ['moderate', Validators.required],
     mensagem: ['', [Validators.required]]
   });
@@ -50,7 +49,6 @@ export class Form {
           return;
         }
 
-        const targetUser = this.userServ.users().find(
         const targetUser = this.userServ.users().filter(
           u => u.department?.id === rawValues.sector && u.id !== requesterId
         ).reduce((u, uc) => u.chats.length < uc.chats.length ? u : uc);

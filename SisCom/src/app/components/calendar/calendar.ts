@@ -9,7 +9,6 @@ import { MeetingModalComponent } from './meeting-modal/meeting-modal';
   standalone: true,
   imports: [MeetingModalComponent],
   templateUrl: './calendar.html',
-  styleUrl: './calendar.css',
 })
 export class Calendar implements OnInit {
 
