@@ -27,10 +27,12 @@
               class="block w-full pl-10 pr-3 py-2.5 border border-slate-300 rounded-lg text-slate-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors sm:text-sm outline-none"
               placeholder="Digite seu nome completo">
           </div>
-          <span *ngIf="cadastroForm.get('nomeCompleto')?.invalid && cadastroForm.get('nomeCompleto')?.touched"
-            class="text-xs text-red-500 mt-1 block">
+          
+          @if (cadastroForm.get('nomeCompleto')?.invalid && cadastroForm.get('nomeCompleto')?.touched) {
+          <span class="text-xs text-red-500 mt-1 block">
             Nome é obrigatório (mínimo 3 letras).
           </span>
+          }
         </div>
 
         <div>
@@ -42,10 +44,12 @@
               class="block w-full pl-10 pr-3 py-2.5 border border-slate-300 rounded-lg text-slate-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors sm:text-sm outline-none"
               placeholder="seu.nome@cehap.pb.gov.br">
           </div>
-          <span *ngIf="cadastroForm.get('email')?.invalid && cadastroForm.get('email')?.touched"
-            class="text-xs text-red-500 mt-1 block">
+          
+          @if (cadastroForm.get('email')?.invalid && cadastroForm.get('email')?.touched) {
+          <span class="text-xs text-red-500 mt-1 block">
             Insira um e-mail válido.
           </span>
+          }
         </div>
 
         <div>
@@ -116,11 +120,12 @@
                 class="block w-full pl-10 pr-3 py-2.5 border border-slate-300 rounded-lg text-slate-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors sm:text-sm outline-none"
                 placeholder="••••••••">
             </div>
-            <span
-              *ngIf="cadastroForm.get('confirmarSenha')?.hasError('passwordMismatch') && cadastroForm.get('confirmarSenha')?.touched"
-              class="text-xs text-red-500 mt-1 block">
+            
+            @if (cadastroForm.get('confirmarSenha')?.hasError('passwordMismatch') && cadastroForm.get('confirmarSenha')?.touched) {
+            <span class="text-xs text-red-500 mt-1 block">
               As senhas não coincidem.
             </span>
+            }
           </div>
         </div>
 
