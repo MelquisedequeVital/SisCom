@@ -16,6 +16,10 @@ export class DepartmentService {
 
   constructor() {
     this.loadDepartments();
+    window.addEventListener('storage', (event) => {
+      console.log('Outra aba modificou o banco!');
+      this.loadDepartments();
+    });
   }
 
   // Mantemos o subscribe aqui porque é uma chamada interna do constructor

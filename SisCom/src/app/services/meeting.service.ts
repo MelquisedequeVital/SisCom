@@ -16,6 +16,10 @@ export class MeetingService {
 
   constructor() {
     this.loadMeetings();
+    window.addEventListener('storage', (event) => {
+      console.log('Outra aba modificou o banco!');
+      this.loadMeetings();
+    });
   }
 
   loadMeetings() {
