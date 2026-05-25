@@ -1,9 +1,19 @@
-<div class="flex-1 flex flex-col bg-[#f3f4f5] relative h-full">
+<div class="flex-1 flex flex-col bg-[#f3f4f5] relative h-full w-full">
     @if (chat()) {
-    <header class="bg-white px-6 h-16 border-b border-slate-200 flex items-center justify-between shrink-0">
-        <div class="flex items-center gap-3">
-            <div
-                class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center overflow-hidden text-slate-500">
+    <header class="bg-white px-4 md:px-6 h-16 border-b border-slate-200 flex items-center justify-between shrink-0">
+        <div class="flex items-center gap-2">
+            
+            <button (click)="voltarListagem()" class="md:hidden w-9 h-9 flex items-center justify-center rounded-full text-slate-600 hover:bg-slate-100 transition-colors" title="Voltar para a lista">
+                <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+            </button>
+
+            @if (!isSidebarOpen()) {
+                <button (click)="onToggleSidebar.emit()" class="w-9 h-9 flex items-center justify-center rounded-full text-slate-600 hover:bg-slate-100 transition-colors" title="Abrir menu">
+                    <span class="material-symbols-outlined text-[20px]">menu</span>
+                </button>
+            }
+
+            <div class="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center overflow-hidden text-slate-500 ml-1">
                 <span class="material-symbols-outlined text-2xl">person</span>
             </div>
             <div>
@@ -16,14 +26,13 @@
     <div class="bg-error/10 border-b border-error/20 px-6 py-2 flex items-center gap-2 shrink-0">
         <span class="material-symbols-outlined text-error text-lg"
             style="font-variation-settings: 'FILL' 1;">report</span>
-        <span class="text-[11px] font-bold uppercase tracking-wider text-error">Grau de Urgência: {{
-            getUrgencyLabel(chat()!.urgency) }}</span>
+        <span class="text-[11px] font-bold uppercase tracking-wider text-error">Grau de Urgência: {{ getUrgencyLabel(chat()!.urgency) }}</span>
     </div>
 
     <div class="flex-1 overflow-y-auto p-6 space-y-4 flex flex-col custom-scrollbar bg-[#f8f9fa]">
         @for (msg of chat()!.messages; track msg.id) {
         <div [ngClass]="msg.senderID === loggedInUserId() ? 'self-end bg-[#003399] text-white rounded-tr-none' : 'self-start bg-white border border-slate-200 text-[#191c1d] rounded-tl-none'"
-            class="max-w-[70%] p-3 rounded-xl shadow-sm flex flex-col gap-1">
+            class="max-w-[75%] md:max-w-[70%] p-3 rounded-xl shadow-sm flex flex-col gap-1">
             <p class="text-sm leading-relaxed whitespace-pre-wrap">{{ msg.content }}</p>
             <span [ngClass]="msg.senderID === loggedInUserId() ? 'text-blue-200 self-end' : 'text-slate-400'"
                 class="text-[9px] font-medium leading-none">
@@ -47,18 +56,23 @@
         </div>
     </footer>
     } @else {
-    <div class="h-full flex items-center justify-center">
+    <div class="h-full flex items-center justify-center relative">
+        @if (!isSidebarOpen()) {
+            <div class="absolute top-4 left-4 z-10 hidden md:block">
+                <button (click)="onToggleSidebar.emit()" class="w-10 h-10 flex items-center justify-center rounded-full bg-white shadow-sm border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors" title="Abrir menu">
+                    <span class="material-symbols-outlined">menu</span>
+                </button>
+            </div>
+        }
+
         <div class="max-w-md text-center p-8">
             <div class="mb-6 flex justify-center">
-                <div
-                    class="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-sm border border-slate-200 text-[#003399]">
-                    <span class="material-symbols-outlined text-4xl"
-                        style="font-variation-settings: 'FILL' 1;">forum</span>
+                <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center shadow-sm border border-slate-200 text-[#003399]">
+                    <span class="material-symbols-outlined text-4xl" style="font-variation-settings: 'FILL' 1;">forum</span>
                 </div>
             </div>
             <h2 class="text-xl font-bold text-[#002068] mb-2">SisCom CEHAP</h2>
-            <p class="text-sm text-slate-500">Selecione uma conversa ao lado para visualizar os detalhes do chamado e
-                interagir com o setor.</p>
+            <p class="text-sm text-slate-500">Selecione uma conversa ao lado para visualizar os detalhes do chamado e interagir com o setor.</p>
         </div>
     </div>
     }

@@ -1,8 +1,9 @@
-import { Component, computed, inject, input, signal } from '@angular/core';
+import { Component, computed, inject, input, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ChatService } from '../../../services/chat.service';
 import { Chat } from '../../../models/chat.model';
 import { AuthService } from '../../../services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-active-chat',
@@ -13,8 +14,12 @@ import { AuthService } from '../../../services/auth.service';
 export class ActiveChatComponent {
   private chatServ = inject(ChatService);
   private authService = inject(AuthService);
+  private router = inject(Router);
 
   public chatId = input<string | null>(null);
+  public isSidebarOpen = input<boolean>(true); 
+  public onToggleSidebar = output<void>();
+
   public loggedInUserId = computed(() => this.authService.currentUser()?.id || '');;
 
   private allChats = this.chatServ.chats;
@@ -42,5 +47,10 @@ export class ActiveChatComponent {
   public getUrgencyLabel(urgency: 'low' | 'moderate' | 'high'): string {
     const labels = { high: 'ALTA', moderate: 'MÉDIA', low: 'BAIXA' };
     return labels[urgency] || '';
+  }
+
+  public voltarListagem(): void {
+    // Atenção: Se a sua rota base de listagem não for apenas '/chats', atualize aqui!
+    this.router.navigate(['/chats']); 
   }
 }

@@ -22,6 +22,8 @@ export class InboxComponent implements OnInit {
   public activeTab = signal<'requerido' | 'requerente'>('requerido');
   public activeChatId = signal<string | null>(null);
 
+  public isSidebarOpen = signal<boolean>(true);
+
   private allChats = this.chatServ.chats;
 
   constructor() {
@@ -42,12 +44,16 @@ export class InboxComponent implements OnInit {
           }
         }
       }
-    }); 
+    });
   }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
-      this.activeChatId.set(params.get('id'));
+      const chatId = params.get('id');
+      this.activeChatId.set(chatId);
+      if (chatId && typeof window !== 'undefined' && window.innerWidth < 768) {
+        this.isSidebarOpen.set(false);
+      }
     });
 
   }
@@ -69,10 +75,13 @@ export class InboxComponent implements OnInit {
 
   public selecionarChat(chatId: string): void {
     this.router.navigate(['/chats', chatId]);
+
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      this.isSidebarOpen.set(false);
+    }
   }
 
   public getOtherParticipantName(chat: Chat): string {
-    // PROTEÇÃO ADICIONADA AQUI TAMBÉM
     const other = (chat.participants || []).find(p => p?.id !== this.loggedInUserId());
 
     if (other && other.department) {
@@ -104,4 +113,7 @@ export class InboxComponent implements OnInit {
     return chat.messages[chat.messages.length - 1];
   }
 
+  public toggleSidebar(): void {
+    this.isSidebarOpen.update(v => !v);
+  }
 }

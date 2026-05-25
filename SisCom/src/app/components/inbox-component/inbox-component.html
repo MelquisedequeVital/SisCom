@@ -1,22 +1,38 @@
-<div class="flex flex-1 overflow-hidden h-[calc(100vh-64px)] bg-[#f8f9fa] font-['Public_Sans']">
+<div class="flex flex-1 overflow-hidden h-[calc(100vh-64px)] bg-[#f8f9fa] font-['Public_Sans'] relative">
 
-    <section class="w-full md:w-[400px] bg-white border-r border-slate-200 flex flex-col shrink-0 relative">
+    @if (activeChatId() && isSidebarOpen()) {
+        <div (click)="toggleSidebar()" class="md:hidden fixed inset-0 bg-black/40 z-40 transition-opacity duration-300"></div>
+    }
+
+    <section class="bg-white border-r border-slate-200 flex-col shrink-0 transition-all duration-300 h-full"
+        [ngClass]="
+            activeChatId() 
+                ? (isSidebarOpen() ? 'fixed inset-y-0 left-0 z-50 w-[300px] flex shadow-2xl md:relative md:inset-auto md:z-0 md:w-[400px] md:shadow-none' : 'hidden')
+                : (isSidebarOpen() ? 'flex w-full md:w-[400px] md:relative' : 'flex w-full md:hidden')
+        ">
 
         <div class="p-4 border-b border-slate-100 flex flex-col gap-4 bg-slate-50/50">
             <div class="flex justify-between items-center">
                 <div class="flex items-center gap-2">
-                    <h2 class="text-[14px] text-[#002068] tracking-widest font-extrabold uppercase">Caixa de Entrada
-                    </h2>
+                    <h2 class="text-[14px] text-[#002068] tracking-widest font-extrabold uppercase">Caixa de Entrada</h2>
                     <span class="bg-[#002068] text-white text-[10px] px-2 py-0.5 rounded-full font-bold">
                         {{ displayedChats().length }}
                     </span>
                 </div>
 
-                <button (click)="navegar('request')"
-                    class="bg-[#003399] text-white hover:bg-[#002068] px-3 py-1.5 rounded-lg flex items-center gap-1.5 text-xs font-bold transition-all shadow-sm">
-                    <span class="material-symbols-outlined text-[16px]">add_box</span>
-                    Solicitar
-                </button>
+                <div class="flex items-center gap-2">
+                    <button (click)="toggleSidebar()" class="flex items-center justify-center w-7 h-7 rounded hover:bg-slate-200 text-slate-500 transition-colors" title="Fechar menu">
+                        <span class="material-symbols-outlined text-[20px]">
+                            {{ activeChatId() ? 'close' : 'keyboard_double_arrow_left' }}
+                        </span>
+                    </button>
+
+                    <button (click)="navegar('request')"
+                        class="bg-[#003399] text-white hover:bg-[#002068] px-3 py-1.5 rounded-lg flex items-center gap-1.5 text-xs font-bold transition-all shadow-sm">
+                        <span class="material-symbols-outlined text-[16px]">add_box</span>
+                        Solicitar
+                    </button>
+                </div>
             </div>
 
             <div class="flex p-1 bg-slate-200/60 rounded-lg">
@@ -81,6 +97,11 @@
         </div>
     </section>
 
-    <app-active-chat class="flex-grow h-full" [chatId]="activeChatId()"></app-active-chat>
+    <app-active-chat class="flex-grow h-full w-full" 
+        [ngClass]="activeChatId() ? 'block' : 'hidden md:block'"
+        [chatId]="activeChatId()"
+        [isSidebarOpen]="isSidebarOpen()"
+        (onToggleSidebar)="toggleSidebar()">
+    </app-active-chat>
 
 </div>
