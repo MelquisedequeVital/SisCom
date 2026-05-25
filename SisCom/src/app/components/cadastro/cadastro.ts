@@ -4,6 +4,7 @@ import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractContro
 import { Router, RouterModule } from '@angular/router';
 import { UserService } from '../../services/user.service';
 import { User } from '../../models/user.model'; 
+import { DepartmentService } from '../../services/department.service';
 
 @Component({
   selector: 'app-cadastro',
@@ -15,6 +16,9 @@ export class Cadastro {
   private fb = inject(FormBuilder);
   private userService = inject(UserService);
   private router = inject(Router);
+  private deptServ = inject(DepartmentService);
+
+  public departmentList = this.deptServ.departments;
 
   protected passwordVisibilityIcon = "visibility";
   protected passwordVisibility = "password"
@@ -62,7 +66,7 @@ export class Cadastro {
         name: formData.nomeCompleto,
         email: formData.email,
         password: formData.senha,
-        department: { id: 'temp-id', name: formData.setor } as any, 
+        department: formData.setor, 
         isAdmin: false,
         active: true,
         createdAt: new Date(),
