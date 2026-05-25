@@ -1,7 +1,7 @@
 import { Component, inject, signal, OnInit, effect } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
-import { AuthService } from '../../services/auth.service'; 
+import { AuthService } from '../../../services/auth.service'; 
 
 @Component({
   selector: 'app-admin-header',

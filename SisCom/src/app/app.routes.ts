@@ -1,15 +1,16 @@
 import { Routes } from '@angular/router';
-import { AdminComponent } from './admin-component/admin.component';
-import { InboxComponent } from './inbox-component/inbox-component';
-import { Form } from './inbox-component/newChatForm/form';
+import { InboxComponent } from './components/inbox-component/inbox-component';
+import { Form } from './components/inbox-component/newChatForm/form';
 import { Login } from './components/login/login';
 import { Dashboard } from './components/dashboard/dashboard';
 import { Cadastro } from './components/cadastro/cadastro';
+import { MeetingModalComponent } from './components/calendar/meeting-modal/meeting-modal';
+import { Calendar } from './components/calendar/calendar';
 
 export const routes: Routes = [
     {
         path: 'admin',
-        loadChildren: () => import('./admin-component/admin.routes').then(m => m.ADMIN_ROUTES), 
+        loadChildren: () => import('./components/admin-component/admin.routes').then(m => m.ADMIN_ROUTES), 
         title: 'Admin'
     },
     {
@@ -46,5 +47,9 @@ export const routes: Routes = [
     { 
         path: 'cadastro', 
         component: Cadastro 
+    },
+    {
+        path: 'meetings',
+        component: Calendar
     }
 ];

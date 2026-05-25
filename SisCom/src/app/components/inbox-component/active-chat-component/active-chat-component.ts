@@ -1,8 +1,8 @@
 import { Component, computed, inject, input, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ChatService } from '../../services/chat.service';
-import { Chat } from '../../models/chat.model';
-import { AuthService } from '../../services/auth.service';
+import { ChatService } from '../../../services/chat.service';
+import { Chat } from '../../../models/chat.model';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-active-chat',

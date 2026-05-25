@@ -1,10 +1,10 @@
 import { Component, computed, inject, signal, OnInit, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Chat } from '../models/chat.model';
-import { ChatService } from '../services/chat.service';
+import { Chat } from '../../models/chat.model';
+import { ChatService } from '../../services/chat.service';
 import { ActiveChatComponent } from './active-chat-component/active-chat-component';
-import { AuthService } from '../services/auth.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-inbox',

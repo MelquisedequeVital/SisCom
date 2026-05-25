@@ -1,11 +1,11 @@
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ChatService } from '../../services/chat.service';
-import { Chat } from '../../models/chat.model';
-import { DepartmentService } from '../../services/department.service';
-import { UserService } from '../../services/user.service';
-import { AuthService } from '../../services/auth.service';
+import { ChatService } from '../../../services/chat.service';
+import { Chat } from '../../../models/chat.model';
+import { DepartmentService } from '../../../services/department.service';
+import { UserService } from '../../../services/user.service';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-form',

@@ -1,5 +1,5 @@
 import { Component, input, output, signal } from '@angular/core';
-import { User } from '../../../models/user.model';
+import { User } from '../../../../models/user.model';
 import { DatePipe, NgClass } from '@angular/common';
 
 @Component({

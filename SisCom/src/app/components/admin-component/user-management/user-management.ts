@@ -1,9 +1,9 @@
 import { Component, inject, signal } from '@angular/core';
 import { UserCard } from "./user-card/user-card";
-import { UserService } from '../../services/user.service';
-import { User } from '../../models/user.model';
+import { UserService } from '../../../services/user.service';
+import { User } from '../../../models/user.model';
 import { UserModal } from "./user-modal/user-modal";
-import { DepartmentService } from '../../services/department.service';
+import { DepartmentService } from '../../../services/department.service';
 
 
 @Component({

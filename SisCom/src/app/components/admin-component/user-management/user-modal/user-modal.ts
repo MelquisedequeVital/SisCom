@@ -1,7 +1,7 @@
 import { Component, inject, input, output, OnInit, effect } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { User } from '../../../models/user.model';
-import { Department } from '../../../models/department.model';
+import { User } from '../../../../models/user.model';
+import { Department } from '../../../../models/department.model';
 
 @Component({
   selector: 'app-user-modal',
