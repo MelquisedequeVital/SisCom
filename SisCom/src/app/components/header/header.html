@@ -1,0 +1,39 @@
+<header class="h-16 w-full bg-white border-b border-gray-200 flex items-center justify-between px-6 z-10 shrink-0">
+    <div class="flex items-center gap-3">
+        <span class="text-xl font-bold tracking-wider text-[#002B93]">SISCOM</span>
+
+        @if (isAdminRoute()) {
+        <span class="text-xs px-2 py-0.5 bg-gray-100 text-gray-500 rounded font-mono font-semibold">PAINEL
+            CONTROLE</span>
+        }
+    </div>
+
+    <div class="flex items-center gap-5 relative">
+        <div class="h-8 w-px bg-gray-200"></div>
+
+
+        <button (click)="toggleMenu()"
+            class="cursor-pointer w-9 h-9 rounded-full bg-gray-200 text-gray-700 flex items-center justify-center font-bold text-sm border border-gray-300 shadow-sm hover:bg-gray-300 transition-colors focus:outline-none select-none">
+            {{ userInitials() }}
+        </button>
+
+        @if (isMenuOpen()) {
+        <div class="absolute right-0 top-11 w-max bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-50">
+            <div class="px-4 py-3 border-b border-gray-100 bg-gray-50/50">
+                <p class="text-sm font-bold text-gray-900 whitespace-nowrap">
+                    {{ currentUser()?.name || 'Administrador' }}
+                </p>
+                <p class="text-[10px] font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap mt-0.5">
+                    {{ currentUser()?.department?.code }} - {{ currentUser()?.department?.name || 'Setor Indefinido' }}
+                </p>
+            </div>
+
+            <button (click)="logout()"
+                class="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 font-semibold flex items-center gap-2 transition-colors focus:outline-none">
+                <span class="material-symbols-outlined text-base">logout</span>
+                Sair do sistema
+            </button>
+        </div>
+        }
+    </div>
+</header>

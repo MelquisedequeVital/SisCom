@@ -1,17 +1,18 @@
 import { Component, inject, signal, OnInit, effect } from '@angular/core';
 import { Router, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
-import { AuthService } from '../../../services/auth.service'; 
+import { AuthService } from '../../services/auth.service'; 
 
 @Component({
-  selector: 'app-admin-header',
+  selector: 'app-header',
   standalone: true,
   imports: [],
-  templateUrl: './admin-header.html',
+  templateUrl: './header.html',
 })
-export class AdminHeader implements OnInit {
+export class Header implements OnInit {
   private router = inject(Router);
   private authService = inject(AuthService);
+  public currentUser = this.authService.currentUser;
   
   public isAdminRoute = signal<boolean>(false);
   public isMenuOpen = signal<boolean>(false);
