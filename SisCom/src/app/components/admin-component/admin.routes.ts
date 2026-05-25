@@ -21,6 +21,10 @@ export const ADMIN_ROUTES: Routes = [
       {
         path: 'meetings',
         loadChildren: () => import('./meeting-management/meeting-management.routes').then(m => m.MANAGEMENT_ROUTES)
+      },
+      {
+        path:'departments',
+        loadComponent: () => import('./department-management/department-management').then(a => a.DepartmentManagement)
       }
     ]
   }

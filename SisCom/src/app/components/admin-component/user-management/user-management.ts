@@ -38,9 +38,12 @@ export class UserManagement {
 
   public gravarDados(userData: Partial<User>): void {
     if (userData.id) {
-      this.userServ.updateUser(userData.id, userData)
+      this.userServ.updateUser(userData.id, userData).subscribe({
+        next: () => this.fecharModal(),
+        error: (err) => console.error('Erro ao atualizar usuário:', err)
+      });
     } else {
-      
+
       const newUser: Omit<User, 'id'> = {
         name: userData.name!,
         email: userData.email!,
@@ -54,19 +57,22 @@ export class UserManagement {
         chats: [],
       }
 
-      this.userServ.addUser(newUser);
+      this.userServ.addUser(newUser).subscribe({
+        next: () => this.fecharModal(),
+        error: (err) => console.error('Erro ao cadastrar usuário:', err)
+      });
     }
 
-    this.fecharModal();
   }
 
   removerUsuario(id: string) {
     if (confirm('Deseja remover este servidor do sistema?')) {
-      try {
-        this.userServ.deleteUser(id);
-      } catch (error) {
-        console.error(error);
-      }
+ 
+        this.userServ.deleteUser(id).subscribe({
+          next: () => console.log('Usuário removido com sucesso'),
+          error: (err) => console.error('Erro ao remover usuário:', err)
+        });
+  
     }
   }
 
