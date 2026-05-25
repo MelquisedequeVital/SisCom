@@ -16,12 +16,15 @@ export class Calendar implements OnInit {
   protected meetingService = inject(MeetingService);
   protected departmentService = inject(DepartmentService);
   protected userService = inject(UserService);
-  protected authService = inject(AuthService);
+  private authService = inject(AuthService);
 
   public currentDate = signal<Date>(new Date());
   public currentUser = this.authService.currentUser;
   public isModalOpen = signal<boolean>(false);
-  public isManager = signal<boolean | undefined>(this.currentUser()?.isManager);
+  public isManager = computed(() => {
+    const user = this.authService.currentUser();
+    return user?.isManager === true || user?.isAdmin === true;
+  });
   public selectedDateForMeeting = signal<Date | null>(null);
   private users = this.userService.users;
 
@@ -80,16 +83,19 @@ export class Calendar implements OnInit {
     this.currentDate.set(new Date(current.getFullYear(), current.getMonth() - 1, 1));
   }
 
+  // Criamos uma variável para guardar a reunião que o usuário clicou para assistir
   public selectedMeeting = signal<any | null>(null);
 
-
   public openMeetingModel(dateStr: string = '', meeting: any = null): void {
-
+  // Se clicou em um bloco de reunião que já existe: abre para qualquer um
     if (meeting) {
       this.selectedMeeting.set(meeting);
+      this.selectedDateForMeeting.set(null);
       this.isModalOpen.set(true);
       return;
     }
+
+  // Se clicou no quadrado vazio para criar: só cria se for gerente
     if (!this.isManager()) return;
 
     this.selectedMeeting.set(null); // Limpa para vir o formulário em branco

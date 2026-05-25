@@ -1,4 +1,4 @@
-import { Component, inject, input, output, OnInit } from '@angular/core';
+import { Component, inject, Input, input, output, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DatePipe } from '@angular/common';
 import { MeetingService } from '../../../services/meeting.service';
@@ -17,6 +17,7 @@ export class MeetingModalComponent implements OnInit {
   protected meetingService = inject(MeetingService);
   protected departmentService = inject(DepartmentService);
   protected userService = inject(UserService);
+  @Input() isManager: boolean = false;
 
   initialDate = input<string>(''); 
   closeModal = output<void>();
