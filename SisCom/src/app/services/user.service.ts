@@ -16,6 +16,11 @@ export class UserService {
 
   constructor() {
     this.loadUsers();
+
+    window.addEventListener('storage', (event) => {
+      console.log('Outra aba modificou o banco!');
+      this.loadUsers();
+    });
   }
 
   loadUsers() {
@@ -23,6 +28,8 @@ export class UserService {
       next: (data) => this.usersSignal.set(data),
       error: (err) => console.error("Erro ao carregar usuários", err)
     });
+
+    
   }
 
   addUser(user: Omit<User, 'id'>) {
