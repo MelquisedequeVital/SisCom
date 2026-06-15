@@ -25,4 +25,8 @@ public class Meeting {
     public void addParticipant(User participant) {
         this.participants.add(participant);
     }
+
+    public void removeParticipant(String id){
+        this.participants.removeIf(participant -> participant.getId().equals(id));
+    }
 }

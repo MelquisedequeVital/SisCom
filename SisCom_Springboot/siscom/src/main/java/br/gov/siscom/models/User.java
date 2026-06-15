@@ -24,4 +24,8 @@ public class User {
     public void addChat(Chat chat){
         this.chats.add(chat);
     }
+
+    public void removeChat(String id){
+        this.chats.removeIf(chat -> chat.getId().equals(id));
+    }
 }
