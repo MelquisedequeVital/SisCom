@@ -9,8 +9,8 @@ import { ApiService } from './api.service';
 export class AuthService {
   private api = inject(ApiService);
   
-  private readonly loginUrl = 'http://localhost:4200/api/login'; 
-  private readonly usersUrl = 'http://localhost:4200/api/users';
+  private readonly loginUrl = '/api/login';
+  private readonly usersUrl = '/api/users';
 
   private currentUserSignal = signal<User | null>(null);
   public currentUser = this.currentUserSignal.asReadonly();

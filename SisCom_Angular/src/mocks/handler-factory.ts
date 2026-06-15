@@ -1,4 +1,5 @@
 import { http, HttpResponse, JsonBodyType } from 'msw';
+import { hashSync } from 'bcryptjs';
 
 // --- Helpers de Banco ---
 export const db = {
@@ -24,6 +25,10 @@ export const Post = <T extends { id?: string | number }>(url: string, dbKey: str
             ...newItem,
             id: newItem.id ?? crypto.randomUUID()
         };
+        // If creating a new user in the mock DB, hash the password before storing
+        if (dbKey === 'users' && (itemWithId as any).password) {
+            (itemWithId as any).password = hashSync(String((itemWithId as any).password), 10);
+        }
         const data = db.get<T>(dbKey);
         data.push(itemWithId as T);
         db.set(dbKey, data);

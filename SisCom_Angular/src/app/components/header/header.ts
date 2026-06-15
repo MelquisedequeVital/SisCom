@@ -18,14 +18,14 @@ export class Header implements OnInit {
   public isMenuOpen = signal<boolean>(false);
   public userInitials = signal<string>('US');
 
+  public canSeeDashboard = signal<boolean>(false);
+
   constructor() {
     effect(() => {
-      // Lê o Signal do AuthService
       const user = this.authService.currentUser();
-      
       const email = user?.email || 'admin.usuario@cehap.pb.gov.br';
-      
       this.userInitials.set(this.getInitialsFromEmail(email));
+      this.canSeeDashboard.set(!!user && (user.isAdmin || user.isManager));
     });
   }
 

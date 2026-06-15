@@ -1,5 +1,6 @@
 import * as handleFactory from './handler-factory';
 import { http, HttpResponse, JsonBodyType } from 'msw';
+import { compareSync } from 'bcryptjs';
 
 const BASE_URL = 'http://localhost:4200';
 
@@ -44,10 +45,13 @@ export const handlers = [
     
     http.post(urlLogin, async ({ request }) => {
         const credentials = (await request.json()) as any;
-        
+
         const users = handleFactory.db.get<any>(DB_USER_KEY);
-        
-        const user = users.find((u:any) => u.email === credentials.email && u.password === credentials.password);
+
+        const user = users.find((u:any) =>
+            String(u.email).trim().toLowerCase() === String(credentials.email).trim().toLowerCase() &&
+            compareSync(String(credentials.password), String(u.password))
+        );
 
         if (user) {
             return HttpResponse.json(user, { status: 200 });

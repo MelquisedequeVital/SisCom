@@ -1,4 +1,6 @@
 import { Routes } from '@angular/router';
+import { AuthGuard } from './services/auth.guard';
+import { LoginGuard } from './services/login.guard';
 import { InboxComponent } from './components/inbox-component/inbox-component';
 import { Form } from './components/inbox-component/newChatForm/form';
 import { Login } from './components/login/login';
@@ -10,8 +12,10 @@ import { Calendar } from './components/calendar/calendar';
 export const routes: Routes = [
     {
         path: 'admin',
-        loadChildren: () => import('./components/admin-component/admin.routes').then(m => m.ADMIN_ROUTES), 
-        title: 'Admin'
+        loadChildren: () => import('./components/admin-component/admin.routes').then(m => m.ADMIN_ROUTES),
+        title: 'Admin',
+        canActivate: [AuthGuard],
+        data: { requireAdmin: true }
     },
     {
         path: 'chats',
@@ -30,7 +34,8 @@ export const routes: Routes = [
 
     { 
         path: 'login', 
-        component: Login 
+        component: Login,
+        canActivate: [LoginGuard]
     },
   
     { 
@@ -41,7 +46,9 @@ export const routes: Routes = [
     
     {
         path: 'dashboard', 
-        component: Dashboard
+        component: Dashboard,
+        canActivate: [AuthGuard],
+        data: { requireManager: true }
     },
 
     { 

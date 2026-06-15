@@ -55,13 +55,19 @@ export class Login {
       next: (user) => {
         this.isLoading.set(false);
         console.log('Utilizador autenticado com sucesso:', user);
-        
-       this.router.navigate([user.isAdmin ? '/admin' : '/dashboard']); 
+
+        if (user.isAdmin) {
+          this.router.navigate(['/admin']);
+        } else if (user.isManager) {
+          this.router.navigate(['/dashboard']);
+        } else {
+          this.router.navigate(['/chats']);
+        }
       },
       error: (err) => {
         this.isLoading.set(false);
         console.error('Falha na autenticação:', err);
-        
+
         this.errorMessage.set('E-mail ou senha incorretos. Por favor, tente novamente.');
       }
     });
