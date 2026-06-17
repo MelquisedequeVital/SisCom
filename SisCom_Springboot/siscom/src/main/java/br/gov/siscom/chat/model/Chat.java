@@ -1,7 +1,8 @@
-package br.gov.siscom.models;
+package br.gov.siscom.chat.model;
 
 import java.util.List;
 
+import br.gov.siscom.user.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

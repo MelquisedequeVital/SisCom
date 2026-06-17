@@ -1,4 +1,4 @@
-package br.gov.siscom.models;
+package br.gov.siscom.chat.model;
 
 import java.util.Date;
 

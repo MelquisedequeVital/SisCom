@@ -1,4 +1,4 @@
-package br.gov.siscom.models;
+package br.gov.siscom.department.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

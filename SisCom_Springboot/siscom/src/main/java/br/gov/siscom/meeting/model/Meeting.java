@@ -1,8 +1,9 @@
-package br.gov.siscom.models;
+package br.gov.siscom.meeting.model;
 
 import java.util.Date;
 import java.util.List;
 
+import br.gov.siscom.user.model.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
