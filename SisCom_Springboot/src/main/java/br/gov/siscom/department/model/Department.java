@@ -1,4 +1,8 @@
 package br.gov.siscom.department.model;
+import java.util.UUID;
+
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,7 +22,7 @@ import lombok.NoArgsConstructor;
 public class Department {
     @Id
     @GeneratedValue(strategy=GenerationType.UUID)
-    private String id;
+    private UUID id;
 
     @NotBlank(message="O nome é obrigatório")
     @Column(nullable=false)

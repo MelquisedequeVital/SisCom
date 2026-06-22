@@ -1,6 +1,10 @@
 package br.gov.siscom.user.model;
 
 import java.util.List;
+import java.util.UUID;
+
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import br.gov.siscom.chat.model.Chat;
 import br.gov.siscom.department.model.Department;
@@ -28,7 +32,7 @@ import lombok.NoArgsConstructor;
 public class User {
     @Id
     @GeneratedValue(strategy=GenerationType.UUID)
-    private String id;
+    private UUID id;
 
     @Column(nullable = false)
     private String name;

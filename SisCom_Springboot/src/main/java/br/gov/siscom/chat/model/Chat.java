@@ -1,6 +1,10 @@
 package br.gov.siscom.chat.model;
 
 import java.util.List;
+import java.util.UUID;
+
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import br.gov.siscom.chat.model.enums.Urgency;
 import br.gov.siscom.department.model.Department;
@@ -32,7 +36,7 @@ public class Chat {
     
     @Id
     @GeneratedValue(strategy=GenerationType.UUID)
-    private String id;
+    private UUID id;
 
     @OneToMany(mappedBy="chat",fetch=FetchType.LAZY)
     private List<Message> messages;
