@@ -34,37 +34,55 @@ public class ChatService {
     }
 
     public List<Chat> findAllChats() {
-        return chatRepository.findAll();
+        List<Chat> chats =  chatRepository.findAll();
+
+        this.fillLastMessage(chats);
+
+        return chats;
     }
 
     public Optional<Chat> findChatById(UUID id) {
         return chatRepository.findById(id);
     }
 
+    public List<Chat> findChatByUserId(UUID userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        List<Chat> chats = chatRepository.findByParticipantsContaining(user);
+
+        this.fillLastMessage(chats);
+
+        return chats;
+    }
+
     public Chat updateChat(UUID id, Chat chatDetails) {
-        Chat chatExistente = chatRepository.findById(id)
+        Chat modifiedChat = chatRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Chat não encontrado"));
 
-        // Copia todos os atributos de 'chatDetails' para 'chatExistente', 
-        // mas IGNORA o campo 'id' para não bagunçar a chave primária.
-        BeanUtils.copyProperties(chatDetails, chatExistente, "id");
+        BeanUtils.copyProperties(chatDetails, modifiedChat, "id");
 
-        return chatRepository.save(chatExistente);
+        return chatRepository.save(modifiedChat);
+    }
+
+    private void fillLastMessage(List<Chat> chats) {
+        for (Chat chat : chats) {
+            msgRepository.findFirstByChatIdOrderByTimestampDesc(chat.getId())
+                    .ifPresent(chat::setLastMessage);
+        }
     }
 
     public MessageDTO saveMessage(MessageDTO dto) {
         Chat chat = chatRepository.findById(dto.getChatId()).orElseThrow(() -> new RuntimeException("Chat não encontrado"));
-        User sender = userRepository.findById(dto.getSenderId()).orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+        User participant = chat.getParticipants().stream().filter(p -> p.getId().equals(dto.getSenderId())).findFirst().orElseThrow(() -> new RuntimeException("Usuário não pertence ao chat"));
 
         Message message = new Message();
         message.setContent(dto.getContent());
         message.setChat(chat);
-        message.setSender(sender);
+        message.setSender(participant);
         message.setTimestamp(LocalDateTime.now());
         message.setIsRead(false);
         message.setDeleted(false);
-
-        msgRepository.save(message);
 
         return dto;
     }

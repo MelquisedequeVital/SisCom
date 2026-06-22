@@ -5,15 +5,7 @@ import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import br.gov.siscom.chat.model.Chat;
 import br.gov.siscom.chat.service.ChatService;
@@ -36,8 +28,14 @@ public class ChatController {
     @GetMapping("/{id}")
     public ResponseEntity<Chat> getChatById(@PathVariable UUID id) {
         return chatService.findChatById(id)
-                .map(chat -> ResponseEntity.ok(chat))
+                .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping(params = "userId")
+    public ResponseEntity<List<Chat>> getAllChatsByUserId(@RequestParam UUID userId) {
+        List<Chat> chats = chatService.findChatByUserId(userId);
+        return ResponseEntity.ok(chats);
     }
 
     @PostMapping
