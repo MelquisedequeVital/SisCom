@@ -1,9 +1,11 @@
 package br.gov.siscom.chat.model.dto;
 
+import java.util.UUID;
+
 public class MessageDTO {
     private String content;
-    private String senderId;
-    private String chatId;
+    private UUID senderId;
+    private UUID chatId;
 
     public String getContent() {
         return content;
@@ -13,19 +15,19 @@ public class MessageDTO {
         this.content = content;
     }
 
-    public String getSenderId() {
+    public UUID getSenderId() {
         return senderId;
     }
 
-    public void setSenderId(String senderId) {
+    public void setSenderId(UUID senderId) {
         this.senderId = senderId;
     }
 
-    public String getChatId() {
+    public UUID getChatId() {
         return chatId;
     }
 
-    public void setChatId(String chatId) {
+    public void setChatId(UUID chatId) {
         this.chatId = chatId;
     }
 

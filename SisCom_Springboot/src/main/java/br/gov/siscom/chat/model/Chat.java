@@ -3,9 +3,6 @@ package br.gov.siscom.chat.model;
 import java.util.List;
 import java.util.UUID;
 
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
-
 import br.gov.siscom.chat.model.enums.Urgency;
 import br.gov.siscom.department.model.Department;
 import br.gov.siscom.user.model.User;
@@ -20,6 +17,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -51,6 +49,7 @@ public class Chat {
         joinColumns = @JoinColumn(name= "chat_id"),
         inverseJoinColumns = @JoinColumn(name = "user_id")
     )
+    @OrderBy("timestamp ASC")
     private List<User> participants;
 
     @Transient

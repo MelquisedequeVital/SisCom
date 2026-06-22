@@ -1,6 +1,7 @@
 package br.gov.siscom.chat.model;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import br.gov.siscom.user.model.User;
 import jakarta.persistence.Column;
@@ -25,7 +26,7 @@ public class Message {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    private UUID id;
 
     @NotBlank(message = "Conteúdo da mensagem é obrigatório")
     @Column(nullable = false)
