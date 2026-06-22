@@ -15,7 +15,6 @@ import br.gov.siscom.chat.repository.ChatRepository;
 import br.gov.siscom.chat.repository.MessageRepository;
 import br.gov.siscom.user.model.User;
 import br.gov.siscom.user.repository.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class ChatService {
