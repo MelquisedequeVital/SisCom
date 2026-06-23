@@ -2,10 +2,9 @@ package br.gov.siscom.chat.service;
 
 import java.lang.reflect.Field;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
+import br.gov.siscom.department.model.Department;
 import org.springframework.stereotype.Service;
 
 import br.gov.siscom.chat.model.Chat;
@@ -30,6 +29,18 @@ public class ChatService {
     }
 
     public Chat saveChat(Chat chat) {
+        Department requestedDept = chat.getRequestedDepartment();
+        List<User> usersDept = userRepository.findByDepartmentId((requestedDept.getId()));
+        User requestedUser = usersDept.stream()
+                .min(Comparator.comparingInt(user -> user.getChats().size()))
+                .orElseThrow(() -> new RuntimeException("Nenhum usuário disponível neste departamento"));
+
+        List<User> participants = new ArrayList<>(chat.getParticipants());
+
+        participants.add(requestedUser);
+
+        chat.setParticipants(participants);
+
         return chatRepository.save(chat);
     }
 
