@@ -1,11 +1,11 @@
 package br.gov.siscom.chat.service;
 
+import java.lang.reflect.Field;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import br.gov.siscom.chat.model.Chat;
@@ -34,7 +34,7 @@ public class ChatService {
     }
 
     public List<Chat> findAllChats() {
-        List<Chat> chats =  chatRepository.findAll();
+        List<Chat> chats = chatRepository.findAll();
 
         this.fillLastMessage(chats);
 
@@ -60,7 +60,29 @@ public class ChatService {
         Chat modifiedChat = chatRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Chat não encontrado"));
 
-        BeanUtils.copyProperties(chatDetails, modifiedChat, "id");
+        Field[] fields = chatDetails.getClass().getDeclaredFields();
+
+        List<String> prohibitedFields = List.of("id", "requester", "participants", "requestedDepartment");
+
+        try {
+            for (Field field : fields) {
+                field.setAccessible(true);
+
+                if (prohibitedFields.contains(field.getName())) {
+                    continue;
+                }
+
+                Object valorNovo = field.get(chatDetails);
+
+                if (valorNovo != null) {
+                    field.set(modifiedChat, valorNovo);
+                }
+            }
+
+
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException("Erro ao processar a atualização dos campos do chat", e);
+        }
 
         return chatRepository.save(modifiedChat);
     }
@@ -73,11 +95,11 @@ public class ChatService {
     }
 
     public MessageDTO saveMessage(MessageDTO dto) {
-        Chat chat = chatRepository.findById(dto.getChatId()).orElseThrow(() -> new RuntimeException("Chat não encontrado"));
-        User participant = chat.getParticipants().stream().filter(p -> p.getId().equals(dto.getSenderId())).findFirst().orElseThrow(() -> new RuntimeException("Usuário não pertence ao chat"));
+        Chat chat = chatRepository.findById(dto.chatId()).orElseThrow(() -> new RuntimeException("Chat não encontrado"));
+        User participant = chat.getParticipants().stream().filter(p -> p.getId().equals(dto.senderId())).findFirst().orElseThrow(() -> new RuntimeException("Usuário não pertence ao chat"));
 
         Message message = new Message();
-        message.setContent(dto.getContent());
+        message.setContent(dto.content());
         message.setChat(chat);
         message.setSender(participant);
         message.setTimestamp(LocalDateTime.now());
