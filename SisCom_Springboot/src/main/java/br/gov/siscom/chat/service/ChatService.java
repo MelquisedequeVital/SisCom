@@ -30,7 +30,7 @@ public class ChatService {
 
     public Chat saveChat(Chat chat) {
         Department requestedDept = chat.getRequestedDepartment();
-        List<User> usersDept = userRepository.findByDepartmentId((requestedDept.getId()));
+        List<User> usersDept = userRepository.findByDepartment((requestedDept)).orElseThrow(() -> new RuntimeException("Departments not found"));
         User requestedUser = usersDept.stream()
                 .min(Comparator.comparingInt(user -> user.getChats().size()))
                 .orElseThrow(() -> new RuntimeException("Nenhum usuário disponível neste departamento"));

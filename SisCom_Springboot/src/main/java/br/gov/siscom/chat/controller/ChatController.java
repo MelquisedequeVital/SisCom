@@ -11,7 +11,7 @@ import br.gov.siscom.chat.model.Chat;
 import br.gov.siscom.chat.service.ChatService;
 
 @RestController
-@RequestMapping("api/siscom/chat")
+@RequestMapping("/chat")
 public class ChatController {
 
     private final ChatService chatService;
