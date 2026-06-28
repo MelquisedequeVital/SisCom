@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import br.gov.siscom.chat.model.Chat;
 import br.gov.siscom.department.model.Department;
+import br.gov.siscom.user.model.enums.RoleName;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;

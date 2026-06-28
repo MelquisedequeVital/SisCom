@@ -1,4 +1,4 @@
-package br.gov.siscom.user.model;
+package br.gov.siscom.user.model.enums;
 
 public enum RoleName {
     ROLE_ADMIN,

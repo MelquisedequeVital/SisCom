@@ -1,8 +1,12 @@
 package br.gov.siscom.user.controller;
 
-
-import br.gov.siscom.user.model.User;
+import br.gov.siscom.user.model.dto.UserCreateDTO;
+import br.gov.siscom.user.model.dto.UserResponseDTO;
+import br.gov.siscom.user.model.dto.UserUpdateDTO;
 import br.gov.siscom.user.service.UserService;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,23 +22,32 @@ public class UserController {
     }
 
     @GetMapping
-    public List<User> findAllUsers() {
-        return userService.getAllUsers();
+    public ResponseEntity<List<UserResponseDTO>> findAllUsers() {
+        return ResponseEntity.ok(userService.listarTodos());
     }
 
     @GetMapping("/{id}")
-    public User findUserById(@PathVariable UUID id) {
-        return userService.getUserById(id);
+    public ResponseEntity<UserResponseDTO> findUserById(@PathVariable UUID id) {
+        try {
+            return ResponseEntity.ok(userService.buscarPorId(id));
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
-
     @PostMapping
-    public User createUser(@RequestBody User user) {
-        return userService.addUser(user);
+    public ResponseEntity<UserResponseDTO> createUser(@RequestBody UserCreateDTO dto) {
+        UserResponseDTO novoUsuario = userService.adicionarUser(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(novoUsuario);
     }
 
     @PutMapping("/{id}")
-    public User updateUser(@PathVariable UUID id, @RequestBody User user) {
-        return userService.updateUser(id, user);
+    public ResponseEntity<UserResponseDTO> updateUser(@PathVariable UUID id, @RequestBody UserUpdateDTO dto) {
+        try {
+            UserResponseDTO usuarioAtualizado = userService.atualizarUser(id, dto);
+            return ResponseEntity.ok(usuarioAtualizado);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
