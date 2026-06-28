@@ -31,3 +31,15 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# Ignorar ficheiros do IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+
+# Ignorar ficheiros do Eclipse
+.settings/
+.idearun/
+.classpath
+.project
+.factorypath

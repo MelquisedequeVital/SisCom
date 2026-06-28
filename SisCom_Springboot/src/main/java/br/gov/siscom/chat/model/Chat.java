@@ -21,13 +21,7 @@ import jakarta.persistence.OrderBy;
 import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@AllArgsConstructor
-@NoArgsConstructor
-@Data
 
 @Entity
 public class Chat {
@@ -69,6 +63,21 @@ public class Chat {
     @JoinColumn(name="requested_department_id", nullable=false)
     private Department requestedDepartment;
 
+    public Chat(UUID id, List<Message> messages, String subject, List<User> participants, Message lastMessage, Department requestedDepartment, User requester, Urgency urgency) {
+        this.id = id;
+        this.messages = messages;
+        this.subject = subject;
+        this.participants = participants;
+        this.lastMessage = lastMessage;
+        this.requestedDepartment = requestedDepartment;
+        this.requester = requester;
+        this.urgency = urgency;
+    }
+
+    public Chat() {
+
+    }
+
     public void addMessage(Message message) {
         this.messages.add(message);
     }
@@ -87,5 +96,70 @@ public class Chat {
         // List<User> modifiedUsers = this.participants.stream().filter(partcipant -> !partcipant.getId().equals(id)).collect(Collectors.toList());
         // this.participants = modifiedUsers;
         this.participants.removeIf(participant -> participant.getId().equals(id));
+    }
+
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
+    }
+
+    public List<Message> getMessages() {
+        return messages;
+    }
+
+    public void setMessages(List<Message> messages) {
+        this.messages = messages;
+    }
+
+    public String getSubject() {
+        return subject;
+    }
+
+    public void setSubject(String subject) {
+        this.subject = subject;
+    }
+
+    public List<User> getParticipants() {
+        return participants;
+    }
+
+    public void setParticipants(List<User> participants) {
+        this.participants = participants;
+    }
+
+    public Message getLastMessage() {
+        return lastMessage;
+    }
+
+    public void setLastMessage(Message lastMessage) {
+        this.lastMessage = lastMessage;
+    }
+
+    public Urgency getUrgency() {
+        return urgency;
+    }
+
+    public void setUrgency(Urgency urgency) {
+        this.urgency = urgency;
+    }
+
+    public User getRequester() {
+        return requester;
+    }
+
+    public void setRequester(User requester) {
+        this.requester = requester;
+    }
+
+    public Department getRequestedDepartment() {
+        return requestedDepartment;
+    }
+
+    public void setRequestedDepartment(Department requestedDepartment) {
+        this.requestedDepartment = requestedDepartment;
     }
 }
