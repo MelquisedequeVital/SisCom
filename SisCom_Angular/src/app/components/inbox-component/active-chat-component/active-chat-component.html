@@ -18,7 +18,7 @@
             </div>
             <div>
                 <h1 class="font-bold text-[#191c1d] text-sm leading-tight">{{ chat()!.subject }}</h1>
-                <p class="text-xs text-slate-500 font-medium">{{ getOtherParticipantName(chat()!) }}</p>
+                <p class="text-xs text-slate-500 font-medium">{{ getOtherParticipantName(chat()) }}</p>
             </div>
         </div>
     </header>
@@ -31,10 +31,10 @@
 
     <div class="flex-1 overflow-y-auto p-6 space-y-4 flex flex-col custom-scrollbar bg-[#f8f9fa]">
         @for (msg of chat()!.messages; track msg.id) {
-        <div [ngClass]="msg.senderID === loggedInUserId() ? 'self-end bg-[#003399] text-white rounded-tr-none' : 'self-start bg-white border border-slate-200 text-[#191c1d] rounded-tl-none'"
+        <div [ngClass]="String(msg.senderId) === String(loggedInUserId()) ? 'self-end bg-[#003399] text-white rounded-tr-none' : 'self-start bg-white border border-slate-200 text-[#191c1d] rounded-tl-none'"
             class="max-w-[75%] md:max-w-[70%] p-3 rounded-xl shadow-sm flex flex-col gap-1">
             <p class="text-sm leading-relaxed whitespace-pre-wrap">{{ msg.content }}</p>
-            <span [ngClass]="msg.senderID === loggedInUserId() ? 'text-blue-200 self-end' : 'text-slate-400'"
+            <span [ngClass]="msg.senderId === loggedInUserId() ? 'text-blue-200 self-end' : 'text-slate-400'"
                 class="text-[9px] font-medium leading-none">
                 {{ msg.timestamp | date:'HH:mm' }}
             </span>

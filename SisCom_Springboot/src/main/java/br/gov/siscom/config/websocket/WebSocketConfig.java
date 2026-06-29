@@ -14,13 +14,13 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void configureMessageBroker(MessageBrokerRegistry config){
         config.enableSimpleBroker("/queue");
 
-        config.setApplicationDestinationPrefixes("/siscom");
+        config.setApplicationDestinationPrefixes("/ws");
     }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry){
 
-        registry.addEndpoint("/siscom")
+        registry.addEndpoint("/stomp-websocket")
                 .setAllowedOriginPatterns("*");
                 // .withSockJS();
     }

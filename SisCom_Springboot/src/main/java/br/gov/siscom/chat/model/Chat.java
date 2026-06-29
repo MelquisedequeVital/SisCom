@@ -8,6 +8,8 @@ import br.gov.siscom.department.model.Department;
 import br.gov.siscom.user.model.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -31,6 +33,7 @@ public class Chat {
     private UUID id;
 
     @OneToMany(mappedBy="chat",fetch=FetchType.LAZY)
+    @OrderBy("timestamp ASC")
     private List<Message> messages;
 
     @NotBlank(message = "Motivo do Chat é obrigatório")
@@ -43,7 +46,6 @@ public class Chat {
         joinColumns = @JoinColumn(name= "chat_id"),
         inverseJoinColumns = @JoinColumn(name = "user_id")
     )
-    @OrderBy("timestamp ASC")
     private List<User> participants;
 
     @Transient
@@ -51,6 +53,7 @@ public class Chat {
 
     @NotNull(message = "Urgência do Chat é obrigatório")
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private Urgency urgency;
 
     @NotNull(message = "Requeridor do Chat é obrigatório")

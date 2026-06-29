@@ -9,17 +9,12 @@ import { ApiService } from './api.service';
 })
 export class MeetingService {
   private api = inject(ApiService);
-  private readonly apiUrl = 'http://localhost:4200/api/meetings';
+  private readonly apiUrl = 'http://localhost:8080/api/meetings';
 
   private meetingsSignal = signal<Meeting[]>([]);
   public meetings = this.meetingsSignal.asReadonly();
 
   constructor() {
-    this.loadMeetings();
-    window.addEventListener('storage', (event) => {
-      console.log('Outra aba modificou o banco!');
-      this.loadMeetings();
-    });
   }
 
   loadMeetings() {

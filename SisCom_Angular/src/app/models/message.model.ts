@@ -1,7 +1,7 @@
 export interface Message {
     id: string;
     content: string;
-    senderID: string;
+    senderId: string;
     timestamp: Date;
     isRead: boolean
 }

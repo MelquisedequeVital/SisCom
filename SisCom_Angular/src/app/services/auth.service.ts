@@ -19,8 +19,8 @@ export class AuthService {
   public login(credentials: any): Observable<User> {
     return this.http.post<LoginResponse>(`${this.apiUrl}/login`, credentials).pipe(
       tap((response) => {
-        localStorage.setItem('auth_token', response.token);
-        localStorage.setItem('auth_user', JSON.stringify(response.user));
+        sessionStorage.setItem('auth_token', response.token);
+        sessionStorage.setItem('auth_user', JSON.stringify(response.user));
         this.currentUserSignal.set(response.user);
       }),
       map((response) => response.user)
@@ -28,18 +28,18 @@ export class AuthService {
   }
 
   public logout(): void {
-    localStorage.removeItem('auth_token');
-    localStorage.removeItem('auth_user');
+    sessionStorage.removeItem('auth_token');
+    sessionStorage.removeItem('auth_user');
     this.currentUserSignal.set(null);
   }
 
   public getToken(): string | null {
-    return localStorage.getItem('auth_token');
+    return sessionStorage.getItem('auth_token');
   }
 
   private getUserFromStorage(): User | null {
     if (typeof window === 'undefined') return null;
-    const userJson = localStorage.getItem('auth_user');
+    const userJson = sessionStorage.getItem('auth_user');
     if (!userJson) return null;
     try {
       return JSON.parse(userJson) as User;

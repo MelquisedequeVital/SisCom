@@ -4,11 +4,12 @@ import { ChatService } from '../../services/chat.service';
 import { MeetingService } from '../../services/meeting.service';
 import { DepartmentService } from '../../services/department.service';
 import { AuthService } from '../../services/auth.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })

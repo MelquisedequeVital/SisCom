@@ -72,7 +72,7 @@ export class Form {
             {
               id: crypto.randomUUID(),
               content: rawValues.mensagem! || 'Nova solicitação aberta.',
-              senderID: requesterId,
+              senderId: requesterId,
               timestamp: new Date(),
               isRead: true 
             }

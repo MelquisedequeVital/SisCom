@@ -11,4 +11,8 @@ export interface Chat {
     urgency: 'low' | 'moderate' | 'high';
     requesterId: string;
     requestedDepartmentId?: string
+    requesterName?: string;
+    requestedDepartmentName?: string;
+    requestedUserName?: string;
+    participantIds?: string[];
 }

@@ -27,8 +27,7 @@ export class InboxComponent implements OnInit {
   private allChats = this.chatServ.chats;
 
   constructor() {
-    // O effect fica a observar: se a URL tem um ID e os chats já carregaram,
-    // ele descobre de quem é o chat e abre a aba certa automaticamente!
+
     effect(() => {
       const currentChatId = this.activeChatId();
       const chats = this.allChats();
@@ -38,15 +37,22 @@ export class InboxComponent implements OnInit {
 
         if (chatAberto) {
           if (chatAberto.requesterId === this.loggedInUserId()) {
-            this.activeTab.set('requerente'); // Fui eu que criei, vai para "Eu Solicitei"
+            this.activeTab.set('requerente');
           } else {
-            this.activeTab.set('requerido'); // Foi outro, vai para "Fui Requerido"
+            this.activeTab.set('requerido');
           }
         }
       }
     });
-  }
 
+
+    effect(() => {
+      const userId = this.loggedInUserId();
+      if (userId) {
+        this.chatServ.loadChats(userId);
+      }
+    });
+  }
   ngOnInit(): void {
     this.route.paramMap.subscribe(params => {
       const chatId = params.get('id');
@@ -63,9 +69,11 @@ export class InboxComponent implements OnInit {
   });
 
   public chatsRequerido = computed(() => {
+    const meuId = this.loggedInUserId();
+    
     return this.allChats().filter(chat =>
-      chat.requesterId !== this.loggedInUserId() &&
-      (chat.participants || []).some(p => p?.id === this.loggedInUserId())
+      chat.requesterId !== meuId && 
+      (chat.participantIds || []).includes(meuId)
     );
   });
 
@@ -82,20 +90,26 @@ export class InboxComponent implements OnInit {
   }
 
   public getOtherParticipantName(chat: Chat): string {
-    const other = (chat.participants || []).find(p => p?.id !== this.loggedInUserId());
+    if (!chat) return 'Setor Indefinido';
 
-    if (other && other.department) {
-      return `${other.name} (${other.department.code})`;
-    }
-
-    return other?.name || 'Setor Indefinido';
+    // Se o utilizador logado for quem solicitou, mostra o nome do departamento requerido
+    if (chat.requesterId === this.loggedInUserId()) {
+      return chat.requestedDepartmentName || 'Setor Destino';
+    } 
+    
+    // Se o utilizador logado for o atendente, mostra o nome de quem solicitou (requerente)
+    return chat.requesterName || 'Usuário Solicitante';
   }
 
-  public getUrgencyConfig(urgency: 'low' | 'moderate' | 'high') {
-    switch (urgency) {
+  public getUrgencyConfig(urgency: string) {
+    if (!urgency) return { label: 'BAIXA', bg: 'bg-[#cbe7f5]', text: 'text-[#021f29]', border: 'border-l-[#59df89]' };
+
+    const normalized = urgency.toLowerCase();
+
+    switch (normalized) {
       case 'high':
         return { label: 'ALTA', bg: 'bg-[#ffdad6]', text: 'text-[#93000a]', border: 'border-l-[#ba1a1a]' };
-      case 'moderate':
+      case 'medium': // Alterado de 'moderate' para 'medium'
         return { label: 'MÉDIA', bg: 'bg-amber-100', text: 'text-amber-800', border: 'border-l-amber-500' };
       case 'low':
         return { label: 'BAIXA', bg: 'bg-[#cbe7f5]', text: 'text-[#021f29]', border: 'border-l-[#59df89]' };
