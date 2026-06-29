@@ -6,7 +6,7 @@
             <p class="text-sm text-slate-500">Informe o motivo e a urgência para iniciar um novo chamado no SisCom.</p>
         </div>
 
-        <form [formGroup]="form"  class="space-y-6">
+        <form [formGroup]="form" class="space-y-6">
 
             <div class="space-y-2">
                 <label for="sector" class="block text-[11px] font-bold text-[#002068] uppercase tracking-widest">Setor
@@ -40,9 +40,9 @@
                     de Urgência</label>
                 <select id="urgencia" formControlName="urgencia"
                     class="w-full h-12 px-4 rounded-lg border-2 border-slate-300 bg-slate-50 text-slate-700 text-sm shadow-sm focus:bg-white focus:ring-2 focus:ring-[#003399] focus:border-[#003399] transition-all outline-none cursor-pointer">
-                    <option value="low">Baixa (Informativo / Rotina)</option>
-                    <option value="moderate">Média (Requer atenção no mesmo dia)</option>
-                    <option value="high">Alta (Resolução imediata necessária)</option>
+                    <option value="LOW">Baixa (Informativo / Rotina)</option>
+                    <option value="MEDIUM">Média (Requer atenção no mesmo dia)</option>
+                    <option value="HIGH">Alta (Resolução imediata necessária)</option>
                 </select>
             </div>
 

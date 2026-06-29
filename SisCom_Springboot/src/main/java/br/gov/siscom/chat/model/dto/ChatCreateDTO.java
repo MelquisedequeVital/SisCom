@@ -9,5 +9,6 @@ public record ChatCreateDTO(
     @NotBlank(message = "Motivo do Chat é obrigatório") String subject,
     @NotNull(message = "Urgência do Chat é obrigatório") Urgency urgency,
     @NotNull(message = "Requeridor do Chat é obrigatório") UUID requesterId,
-    @NotNull(message = "Departamento requerido é obrigatório") UUID requestedDepartmentId
+    @NotNull(message = "Departamento requerido é obrigatório") UUID requestedDepartmentId,
+    @NotBlank(message = "Primeira mensagem obrigatória") String firstMessage
 ) {}

@@ -1,10 +1,8 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ChatService } from '../../../services/chat.service';
-import { Chat } from '../../../models/chat.model';
 import { DepartmentService } from '../../../services/department.service';
-import { UserService } from '../../../services/user.service';
 import { AuthService } from '../../../services/auth.service';
 
 @Component({
@@ -14,12 +12,11 @@ import { AuthService } from '../../../services/auth.service';
   templateUrl: './form.html',
   styleUrl: './form.css',
 })
-export class Form {
+export class Form implements OnInit {
   private fb = inject(FormBuilder);
   private router = inject(Router);
-  private chatServ = inject(ChatService); // Injeção do novo serviço
+  private chatServ = inject(ChatService);
   private deptServ = inject(DepartmentService);
-  private userServ = inject(UserService);
   private authService = inject(AuthService);
 
   enviando = signal(false);
@@ -29,74 +26,38 @@ export class Form {
   form = this.fb.group({
     sector: ['', Validators.required],
     motivo: ['', [Validators.required, Validators.minLength(10)]],
-    urgencia: ['moderate', Validators.required],
+    urgencia: ['MEDIUM', Validators.required], 
     mensagem: ['', [Validators.required]]
   });
+
+  ngOnInit(): void {
+    this.deptServ.loadDepartments();
+  }
 
   enviarSolicitacao() {
     if (this.form.invalid) return;
 
     this.enviando.set(true);
-    const requesterId = this.loggedInUserId();
     const rawValues = this.form.value;
 
-    this.userServ.getUserById(requesterId).subscribe({
-      next: (currentUser) => {
-
-        if (!currentUser) {
-          this.enviando.set(false);
-          alert('Erro de Autenticação: O usuário solicitante não foi encontrado no sistema.');
-          return;
-        }
-
-        const targetUser = this.userServ.users().filter(
-          u => u.department?.id === rawValues.sector && u.id !== requesterId
-        ).reduce((u, uc) => u.chats.length < uc.chats.length ? u : uc);
-
-        if (!targetUser) {
-          this.enviando.set(false);
-          alert('Aviso: Não foi encontrado nenhum atendente cadastrado para este departamento.');
-          return;
-        }
-
   
-        const novaSolicitacao: Omit<Chat, 'id'> = {
-          subject: rawValues.motivo!,
-          urgency: rawValues.urgencia as 'low' | 'moderate' | 'high',
-          requesterId: requesterId,
-          requestedDepartmentId: rawValues.sector!,
-          
-          participants: [currentUser, targetUser], 
-          
-          messages: [
-            {
-              id: crypto.randomUUID(),
-              content: rawValues.mensagem! || 'Nova solicitação aberta.',
-              senderId: requesterId,
-              timestamp: new Date(),
-              isRead: true 
-            }
-          ]
-        };
+    const chatCreateDTO = {
+      subject: rawValues.motivo!,
+      urgency: rawValues.urgencia!,
+      requesterId: this.loggedInUserId(),
+      requestedDepartmentId: rawValues.sector!,
+      firstMessage: rawValues.mensagem!
+    };
 
-        this.chatServ.addChat(novaSolicitacao).subscribe({
-          next: (chatCriado) => {
-            this.enviando.set(false);
-            
-            this.router.navigate(['/chats', chatCriado.id]);
-          },
-          error: (erro) => {
-            this.enviando.set(false);
-            console.error('Falha na API ao criar chat:', erro);
-            alert('Não foi possível enviar a solicitação. Verifique sua conexão e tente novamente.');
-          }
-        });
-
+    this.chatServ.addChat(chatCreateDTO as any).subscribe({
+      next: (chatCriado) => {
+        this.enviando.set(false);
+        this.router.navigate(['/chats', chatCriado.id]);
       },
       error: (erro) => {
         this.enviando.set(false);
-        console.error('Falha na API ao validar usuário:', erro);
-        alert('Erro ao validar seu usuário. Tente novamente.');
+        console.error('Falha na API ao criar chat:', erro);
+        alert('Não foi possível enviar a solicitação. Verifique os dados e tente novamente.');
       }
     });
   }

@@ -27,19 +27,16 @@ export class ChatService {
     });
   }
 
-  addChat(chat: Omit<Chat, 'id'>) {
+  addChat(chat: any): Observable<Chat> {
     return this.api.create<Chat>(this.apiUrl, chat).pipe(
       tap(newChat => {
-        this.chatsSignal.update(oldChats => [...oldChats, newChat]);
+        if (newChat) {
+          newChat.messages = newChat.messages || [];
+          newChat.participantIds = newChat.participantIds || [];
+          newChat.participants = newChat.participants || [];
+        }
 
-        newChat.participants.forEach(user => {
-          if (!user.chats.includes(newChat.id)) {
-            const updatedChats = [...user.chats, newChat.id];
-            this.userServ.updateUser(user.id, { chats: updatedChats }).subscribe({
-              error: (err) => console.error(`Erro ao vincular chat ao usuário ${user.id}:`, err)
-            });
-          }
-        });
+        this.chatsSignal.update(oldChats => [newChat, ...oldChats]);
       })
     );
   }

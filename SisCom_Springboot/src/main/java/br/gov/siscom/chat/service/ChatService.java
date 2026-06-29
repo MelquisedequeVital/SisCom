@@ -67,7 +67,26 @@ public class ChatService {
                 chat.setParticipants(participants);
 
                 Chat savedChat = chatRepository.save(chat);
+
+                if (dto.firstMessage() != null && !dto.firstMessage().trim().isEmpty()) {
+                        this.criarMensagemInicial(savedChat, requester, dto.firstMessage());
+                }
+
                 return convertToResponseDTO(savedChat);
+        }
+
+        private void criarMensagemInicial(Chat chat, User sender, String conteudo) {
+                Message message = new Message();
+                message.setContent(conteudo.trim());
+                message.setChat(chat);
+                message.setSender(sender);
+                message.setTimestamp(LocalDateTime.now());
+                message.setIsRead(false);
+                message.setDeleted(false);
+
+                Message msgSalva = msgRepository.save(message);
+                chat.setLastMessage(msgSalva);
+                chat.setMessages(List.of(msgSalva));
         }
 
         @Transactional
