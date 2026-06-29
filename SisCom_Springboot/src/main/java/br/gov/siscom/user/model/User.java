@@ -1,5 +1,6 @@
 package br.gov.siscom.user.model;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -23,6 +24,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -30,12 +32,11 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-
 @Entity
 @Table(name = "servidor_publico")
 public class User implements UserDetails {
     @Id
-    @GeneratedValue(strategy=GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Column(nullable = false)
@@ -48,18 +49,18 @@ public class User implements UserDetails {
     private String password;
 
     @ManyToOne
-    @JoinColumn(name = "department_id", nullable=false)
-    @NotNull(message="O departamento é obrigatório")
+    @JoinColumn(name = "department_id", nullable = false)
+    @NotNull(message = "O departamento é obrigatório")
     private Department department;
-
 
     @NotNull(message = "O status ativo é obrigatório")
     @Column(nullable = false)
     private Boolean active;
 
-    @NotBlank(message = "O telefone é obrigatório") 
+
+    @NotNull(message = "A data de criação é obrigatória")
     @Column(nullable = false)
-    private String phone;
+    private LocalDateTime createdAt;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
@@ -71,15 +72,13 @@ public class User implements UserDetails {
     @JoinColumn(name = "managed_department_id", nullable = true)
     private Department managedDepartment;
 
-    @ManyToMany(mappedBy="participants")
+    @ManyToMany(mappedBy = "participants")
     private List<Chat> chats;
-
-    
 
     public User(UUID id, String name, String email, String password,
             @NotNull(message = "O departamento é obrigatório") Department department,
             @NotNull(message = "O status ativo é obrigatório") Boolean active,
-            @NotBlank(message = "O telefone é obrigatório") String phone, Set<RoleName> roles,
+            Set<RoleName> roles,
             Department managedDepartment, List<Chat> chats) {
         this.id = id;
         this.name = name;
@@ -87,25 +86,21 @@ public class User implements UserDetails {
         this.password = password;
         this.department = department;
         this.active = active;
-        this.phone = phone;
         this.roles = roles;
         this.managedDepartment = managedDepartment;
         this.chats = chats;
     }
 
-    public User(){}
-    
+    public User() {
+    }
 
     public Set<RoleName> getRoles() {
         return roles;
     }
 
-
     public void setRoles(Set<RoleName> roles) {
         this.roles = roles;
     }
-
-
 
     public UUID getId() {
         return id;
@@ -123,8 +118,6 @@ public class User implements UserDetails {
         this.name = name;
     }
 
-
-
     public void setEmail(String email) {
         this.email = email;
     }
@@ -132,12 +125,12 @@ public class User implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return this.roles.stream()
-        .map(role -> new SimpleGrantedAuthority(role.name()))
-        .collect(Collectors.toList());
+                .map(role -> new SimpleGrantedAuthority(role.name()))
+                .collect(Collectors.toList());
     }
 
     @Override
-    public  String getPassword() {
+    public String getPassword() {
         return password;
     }
 
@@ -186,15 +179,6 @@ public class User implements UserDetails {
         this.active = active;
     }
 
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-
 
     public List<Chat> getChats() {
         return chats;
@@ -202,6 +186,15 @@ public class User implements UserDetails {
 
     public void setChats(List<Chat> chats) {
         this.chats = chats;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
     }
 
     public Department getManagedDepartment() {
@@ -212,12 +205,11 @@ public class User implements UserDetails {
         this.managedDepartment = managedDepartment;
     }
 
-
-    public void addChat(Chat chat){
+    public void addChat(Chat chat) {
         this.chats.add(chat);
     }
 
-    public void removeChat(String id){
+    public void removeChat(String id) {
         this.chats.removeIf(chat -> chat.getId().equals(id));
     }
 }

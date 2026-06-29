@@ -1,54 +1,50 @@
-import { inject, Injectable, signal } from '@angular/core';
-import { User } from '../models/user.model';
-import { Observable, tap } from 'rxjs';
-import { ApiService } from './api.service';
+import { HttpClient } from "@angular/common/http";
+import { inject, Injectable, signal } from "@angular/core";
+import { Observable, tap, map } from "rxjs";
+import { User } from "../models/user.model";
 
-@Injectable({
-  providedIn: 'root'
-})
+interface LoginResponse {
+  token: string;
+  user: User;
+}
+
+@Injectable({ providedIn: 'root' })
 export class AuthService {
-  private api = inject(ApiService);
+  private http = inject(HttpClient);
+  private apiUrl = 'http://localhost:8080/api/siscom';
   
-  private readonly loginUrl = 'http://localhost:4200/api/login'; 
-  private readonly usersUrl = 'http://localhost:4200/api/users';
-
-  private currentUserSignal = signal<User | null>(null);
+  public currentUserSignal = signal<User | null>(this.getUserFromStorage());
   public currentUser = this.currentUserSignal.asReadonly();
 
-  constructor() {
-    this.checkSavedSession();
-  }
-
-  login(email: string, password: string, rememberMe: boolean): Observable<User> {
-    return this.api.create<User>(this.loginUrl, { email, password }).pipe(
-      tap(user => {
-        this.currentUserSignal.set(user);
-        
-        if (rememberMe) {
-          localStorage.setItem('loggedUserId', user.id);
-        } else {
-          sessionStorage.setItem('loggedUserId', user.id);
-        }
-      })
+  public login(credentials: any): Observable<User> {
+    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, credentials).pipe(
+      tap((response) => {
+        localStorage.setItem('auth_token', response.token);
+        localStorage.setItem('auth_user', JSON.stringify(response.user));
+        this.currentUserSignal.set(response.user);
+      }),
+      map((response) => response.user)
     );
   }
 
-  logout(): void {
+  public logout(): void {
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('auth_user');
     this.currentUserSignal.set(null);
-    localStorage.removeItem('loggedUserId');
-    sessionStorage.removeItem('loggedUserId');
   }
 
-  private checkSavedSession() {
-    const savedId = localStorage.getItem('loggedUserId') || sessionStorage.getItem('loggedUserId');
-    
-    if (savedId) {
-      this.api.getById<User>(this.usersUrl, savedId).subscribe({
-        next: (user) => {
-          if (user) this.currentUserSignal.set(user);
-        },
-        error: () => this.logout()
-      });
+  public getToken(): string | null {
+    return localStorage.getItem('auth_token');
+  }
+
+  private getUserFromStorage(): User | null {
+    if (typeof window === 'undefined') return null;
+    const userJson = localStorage.getItem('auth_user');
+    if (!userJson) return null;
+    try {
+      return JSON.parse(userJson) as User;
+    } catch {
+      return null;
     }
   }
 }

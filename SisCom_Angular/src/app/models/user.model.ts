@@ -5,7 +5,6 @@ export interface User {
     name: string;
     department: Department;
     email: string;
-    password: string;
     isAdmin: boolean;
     active: boolean;        // Útil em órgãos públicos para usuários afastados/desativados
     createdAt: Date;        // Importante para auditoria
@@ -13,6 +12,6 @@ export interface User {
     isManager: boolean;
     managedDepartment?: Department;
     chats: string[];
-    meetings?: string[]
-    
+    meetings?: string[];
+    password?: string;
 }

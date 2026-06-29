@@ -12,17 +12,12 @@ import { UserService } from './user.service'; // <-- Adicione esta importação
 export class ChatService {
   private api = inject(ApiService);
   private userServ = inject(UserService); // <-- Injetando o UserService
-  private readonly apiUrl = 'http://localhost:4200/api/chats';
+  private readonly apiUrl = 'http://localhost:8080/api/siscom/chats';
 
   private chatsSignal = signal<Chat[]>([]);
   public chats = this.chatsSignal.asReadonly();
 
   constructor() {
-    this.loadChats();
-    window.addEventListener('storage', (event) => {
-      console.log('Outra aba modificou o banco! Recarregando chats...');
-      this.loadChats();
-    });
   }
 
   loadChats() {

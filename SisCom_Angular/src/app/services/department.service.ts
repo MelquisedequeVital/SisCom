@@ -9,7 +9,7 @@ import { ApiService } from './api.service';
 })
 export class DepartmentService {
   private api = inject(ApiService);
-  private readonly API_URL = 'http://localhost:4200/api/departments';
+  private readonly API_URL = 'http://localhost:8080/api/siscom/departments';
 
   private departmentsSignal = signal<Department[]>([]);
   public departments = this.departmentsSignal.asReadonly();
@@ -24,11 +24,12 @@ export class DepartmentService {
 
   // Mantemos o subscribe aqui porque é uma chamada interna do constructor
   loadDepartments() {
-    this.api.getAll<Department>(this.API_URL).subscribe({
+    this.api.getAll<Department>("http://localhost:8080/api/siscom/departments/public-list").subscribe({
       next: (departments) => this.departmentsSignal.set(departments),
       error: (error) => console.error("Erro ao carregar departamentos do bd: ", error)
     });
   }
+
 
   // Agora retorna o Observable para o componente aguardar a criação
   addDepartment(department: Omit<Department, 'id'>) {

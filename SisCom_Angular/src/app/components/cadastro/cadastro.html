@@ -63,7 +63,7 @@
               <option [ngValue]="null" disabled selected>Selecione um setor...</option>
 
               @for (dept of departmentList(); track dept.id) {
-              <option [ngValue]="dept">{{ dept.code }} - {{ dept.name }}</option>
+              <option [ngValue]="dept.id">{{ dept.code }} - {{ dept.name }}</option>
               }
             </select>
 

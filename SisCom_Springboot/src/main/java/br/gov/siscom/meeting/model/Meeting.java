@@ -6,7 +6,8 @@ import java.util.List;
 import br.gov.siscom.user.model.User;
 import jakarta.persistence.*;
 
-
+@Entity
+@Table(name = "meetings")
 public class Meeting {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

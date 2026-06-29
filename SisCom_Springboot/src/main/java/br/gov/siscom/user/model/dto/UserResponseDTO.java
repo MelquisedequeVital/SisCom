@@ -1,15 +1,21 @@
 package br.gov.siscom.user.model.dto;
 
-import java.util.Set;
+
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
+
+import br.gov.siscom.department.model.Department;
 
 public record UserResponseDTO(
     UUID id,
     String name,
     String email,
-    String phone,
     Boolean active,
-    UUID departmentId,
-    UUID managedDepartmentId,
-    Set<String> roles 
+    Department department,
+    Department managedDepartment,
+    Boolean isAdmin,
+    Boolean isManager,
+    List<String> chats,
+    LocalDateTime createdAt
 ) {}

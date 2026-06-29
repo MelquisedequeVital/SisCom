@@ -9,18 +9,13 @@ import { ApiService } from './api.service';
 })
 export class UserService {
   private api = inject(ApiService);
-  private readonly apiUrl = 'http://localhost:4200/api/users';
+  private readonly apiUrl = 'http://localhost:8080/api/siscom/users';
 
   private usersSignal = signal<User[]>([]);
   public users = this.usersSignal.asReadonly();
 
   constructor() {
-    this.loadUsers();
-
-    window.addEventListener('storage', (event) => {
-      console.log('Outra aba modificou o banco!');
-      this.loadUsers();
-    });
+    // this.loadUsers();
   }
 
   loadUsers() {
@@ -45,9 +40,8 @@ export class UserService {
       return throwError(() => new Error("Usuário não encontrado no cache local para atualização"));
     }
 
-    const fullUpdatedData = { ...current, ...userData };
 
-    return this.api.update<User>(this.apiUrl, userId, fullUpdatedData).pipe(
+    return this.api.update<User>(this.apiUrl, userId, userData).pipe(
       tap((updatedUser) => {
         this.usersSignal.update(users =>
           users.map(u => u.id === userId ? updatedUser : u)

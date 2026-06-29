@@ -49,9 +49,9 @@ export class Login {
     this.isLoading.set(true);
     this.errorMessage.set(null);
 
-    const { email, password, rememberMe } = this.loginForm.value;
+    const { email, password } = this.loginForm.value;
 
-    this.authService.login(email, password, rememberMe).subscribe({
+    this.authService.login({email, password}).subscribe({
       next: (user) => {
         this.isLoading.set(false);
         console.log('Utilizador autenticado com sucesso:', user);

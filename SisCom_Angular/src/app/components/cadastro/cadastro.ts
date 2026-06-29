@@ -62,14 +62,13 @@ export class Cadastro {
     if (this.cadastroForm.valid) {
       const formData = this.cadastroForm.value;
     
-      const novoUsuario: Omit<User, 'id'> = {
+      const novoUsuario: any = {
         name: formData.nomeCompleto,
         email: formData.email,
         password: formData.senha,
-        department: formData.setor, 
+        departmentId: formData.setor, 
         isAdmin: false,
         active: true,
-        createdAt: new Date(),
         isManager: false,
         chats: []
       };

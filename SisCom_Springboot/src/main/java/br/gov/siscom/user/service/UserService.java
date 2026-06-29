@@ -50,6 +50,12 @@ public class UserService {
         return convertToResponseDTO(user);
     }
 
+
+    public UserResponseDTO buscarPorUsername(String username){
+        User user = userRepository.findByEmail(username).orElseThrow(() -> new RuntimeException("Email não encontrado"));
+        return this.convertToResponseDTO(user);
+    }
+
     public UserResponseDTO adicionarUser(UserCreateDTO dto) {
         Department dept = deptRepository.findById(dto.departmentId())
                 .orElseThrow(() -> new RuntimeException("Departamento não encontrado"));
@@ -57,7 +63,6 @@ public class UserService {
         User user = new User();
         user.setName(dto.name());
         user.setEmail(dto.email());
-        user.setPhone(dto.phone());
         user.setActive(dto.active());
         user.setDepartment(dept);
 
@@ -87,9 +92,6 @@ public class UserService {
         if (dto.email() != null) {
             user.setEmail(dto.email());
         }
-        if (dto.phone() != null) {
-            user.setPhone(dto.phone());
-        }
         if (dto.active() != null) {
             user.setActive(dto.active());
         }
@@ -117,23 +119,40 @@ public class UserService {
         return convertToResponseDTO(updatedUser);
     }
 
-    private UserResponseDTO convertToResponseDTO(User user) {
+    public UserResponseDTO convertToResponseDTO(User user) {
         UUID deptId = user.getDepartment() != null ? user.getDepartment().getId() : null;
         UUID managedDeptId = user.getManagedDepartment() != null ? user.getManagedDepartment().getId() : null;
+
+
+    // Converte o departamento se ele existir
+    Department dept = user.getDepartment();
+
+    // Converte o departamento gerenciado se ele existir
+    Department managedDept = user.getManagedDepartment();   
+
 
         Set<String> rolesStr = user.getRoles().stream()
                 .map(role -> role.name())
                 .collect(Collectors.toSet());
 
+        Boolean isAdmin = getBoolean("ROLE_ADMIN", rolesStr);
+        Boolean isManager = getBoolean("ROLE_MANAGER", rolesStr);
+
+        List<String> chatIds = user.getChats() != null ? 
+        user.getChats().stream().map(chat -> chat.getId().toString()).collect(Collectors.toList()) : List.of();
+
         return new UserResponseDTO(
-                user.getId(),
-                user.getName(),
-                user.getUsername(),
-                user.getPhone(),
-                user.getActive(),
-                deptId,
-                managedDeptId,
-                rolesStr);
+            user.getId(),
+            user.getName(),
+            user.getUsername(),
+            user.getActive(),
+            dept,         
+            managedDept,  
+            isAdmin,
+            isManager,
+            chatIds,        
+            user.getCreatedAt()
+    );
     }
 
     private Set<RoleName> getRoles(Boolean isAdmin, Boolean isManager) {
@@ -154,5 +173,9 @@ public class UserService {
         }
 
         return roles;
+    }
+
+    private Boolean getBoolean(String verification, Set<String> roles){
+        return roles.contains(verification);
     }
 }
