@@ -7,7 +7,6 @@ export interface User {
     email: string;
     isAdmin: boolean;
     active: boolean;        // Útil em órgãos públicos para usuários afastados/desativados
-    createdAt: Date;        // Importante para auditoria
     phone?: string;         // Opcional, mas comum em órgãos públicos para contatos rápidos
     isManager: boolean;
     managedDepartment?: Department;

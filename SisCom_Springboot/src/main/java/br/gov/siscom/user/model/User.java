@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import br.gov.siscom.chat.model.Chat;
 import br.gov.siscom.department.model.Department;
 import br.gov.siscom.user.model.enums.RoleName;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -57,6 +58,9 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private Boolean active;
 
+    @Column
+    private String phone;
+
 
     @NotNull(message = "A data de criação é obrigatória")
     @Column(nullable = false)
@@ -72,24 +76,22 @@ public class User implements UserDetails {
     @JoinColumn(name = "managed_department_id", nullable = true)
     private Department managedDepartment;
 
-    @ManyToMany(mappedBy = "participants")
+    @ManyToMany(mappedBy = "participants", cascade = CascadeType.REMOVE)
     private List<Chat> chats;
 
-    public User(UUID id, String name, String email, String password,
-            @NotNull(message = "O departamento é obrigatório") Department department,
-            @NotNull(message = "O status ativo é obrigatório") Boolean active,
-            Set<RoleName> roles,
-            Department managedDepartment, List<Chat> chats) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.department = department;
-        this.active = active;
-        this.roles = roles;
-        this.managedDepartment = managedDepartment;
-        this.chats = chats;
-    }
+ 
+public User(UUID id, String name, String email, String password, Department department, Boolean active, Set<RoleName> roles, Department managedDepartment, List<Chat> chats, String phone) {
+    this.id = id;
+    this.name = name;
+    this.email = email;
+    this.password = password;
+    this.department = department;
+    this.active = active;
+    this.roles = roles;
+    this.managedDepartment = managedDepartment;
+    this.chats = chats;
+    this.phone = phone; // <-- adicione aqui
+}
 
     public User() {
     }
@@ -203,6 +205,24 @@ public class User implements UserDetails {
 
     public void setManagedDepartment(Department managedDepartment) {
         this.managedDepartment = managedDepartment;
+    }
+
+    
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
     public void addChat(Chat chat) {

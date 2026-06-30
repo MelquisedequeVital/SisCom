@@ -15,7 +15,7 @@ export class UserService {
   public users = this.usersSignal.asReadonly();
 
   constructor() {
-    // this.loadUsers();
+    this.loadUsers();
   }
 
   loadUsers() {
