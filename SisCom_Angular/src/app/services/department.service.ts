@@ -1,6 +1,6 @@
 import { inject, Injectable, signal } from '@angular/core';
 import { Department } from '../models/department.model';
-import { Observable, of, throwError } from 'rxjs'; // Adicionado throwError
+import { Observable, of, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { ApiService } from './api.service';
 
@@ -9,6 +9,7 @@ import { ApiService } from './api.service';
 })
 export class DepartmentService {
   private api = inject(ApiService);
+  // Mantém a URL base centralizada
   private readonly API_URL = 'http://localhost:8080/api/siscom/departments';
 
   private departmentsSignal = signal<Department[]>([]);
@@ -22,16 +23,20 @@ export class DepartmentService {
     });
   }
 
-  // Mantemos o subscribe aqui porque é uma chamada interna do constructor
   loadDepartments() {
-    this.api.getAll<Department>("http://localhost:8080/api/siscom/departments/public-list").subscribe({
+    // Ajuste: Utiliza o this.API_URL concatenado com a rota pública
+    this.api.getAll<Department>(`${this.API_URL}/public-list`).subscribe({
       next: (departments) => this.departmentsSignal.set(departments),
       error: (error) => console.error("Erro ao carregar departamentos do bd: ", error)
     });
   }
 
+  // Novo: Método direto para a tela de Cadastro ou Login, garantindo que a requisição
+  // seja feita exatamente no momento em que o usuário abrir a tela.
+  getPublicDepartments(): Observable<Department[]> {
+    return this.api.getAll<Department>(`${this.API_URL}/public-list`);
+  }
 
-  // Agora retorna o Observable para o componente aguardar a criação
   addDepartment(department: Omit<Department, 'id'>) {
     return this.api.create<Department>(this.API_URL, department).pipe(
       tap((newDepartment) => {
@@ -40,7 +45,6 @@ export class DepartmentService {
     );
   }
 
-  // Agora retorna o Observable para o componente aguardar a exclusão
   deleteDepartment(depId: string) {
     return this.api.delete<Department>(this.API_URL, depId).pipe(
       tap(() => {
@@ -49,18 +53,15 @@ export class DepartmentService {
     );
   }
 
-  // Corrigido: Adicionado o "return" e o throwError para proteção
   updateDepartment(deptId: string, changedDept: Partial<Department>) {
     const current = this.departmentsSignal().find(dept => dept.id === deptId);
     
     if (!current) {
-      // Usamos throwError para avisar o componente que o departamento não existe
       return throwError(() => new Error("Departamento não encontrado no cache local para atualização"));
     }
 
     const fullUpdatedData = { ...current, ...changedDept };
     
-    // Agora tem o "return", entregando o Observable para o componente!
     return this.api.update<Department>(this.API_URL, deptId, fullUpdatedData).pipe(
       tap((updatedDepartment) => {
         this.departmentsSignal.update(depts => 
@@ -77,6 +78,7 @@ export class DepartmentService {
       return of(cachedDept);
     }
 
+    // Como o getById não é uma rota pública na API, ele usará o token de autenticação
     return this.api.getById<Department>(this.API_URL, deptId).pipe(
       catchError((error) => {
         console.error(`Erro ao buscar departamento com ID ${deptId}:`, error);
