@@ -13,5 +13,6 @@ public record UserCreateDTO(
     @NotNull(message = "O departamento é obrigatório") UUID departmentId,
     UUID managedDepartmentId,
     Boolean isAdmin,
-    Boolean isManager
+    Boolean isManager,
+    String phone
 ) {}

@@ -17,5 +17,6 @@ public record UserResponseDTO(
     Boolean isAdmin,
     Boolean isManager,
     List<String> chats,
+    String phone,
     LocalDateTime createdAt
 ) {}

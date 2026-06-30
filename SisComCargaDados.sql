@@ -11,6 +11,7 @@ CREATE TABLE servidor_publico (
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
+    phone VARCHAR(20), -- Coluna de telefone adicionada
     active BOOLEAN NOT NULL,
     created_at TIMESTAMP NOT NULL,
     department_id UUID NOT NULL,
@@ -84,7 +85,6 @@ CREATE TABLE meeting_participants (
 );
 
 
-
 -- =========================================================================
 -- 1. POPULANDO DEPARTAMENTOS
 -- =========================================================================
@@ -96,17 +96,16 @@ INSERT INTO department (id, name, code) VALUES
 ('a5555555-5555-5555-5555-555555555555', 'Comunicação e Marketing', 'COM-05');
 
 -- =========================================================================
--- 2. POPULANDO USUÁRIOS (SERVIDOR PÚBLICO) COM SENHAS BCRYPT (senha123)
+-- 2. POPULANDO USUÁRIOS (SERVIDOR PÚBLICO) COM O NOVO HASH E TELEFONES
 -- =========================================================================
--- Todos os usuários abaixo utilizam a senha: senha123
-INSERT INTO servidor_publico (id, name, email, password, active, created_at, department_id, managed_department_id) VALUES
-('b1111111-1111-1111-1111-111111111111', 'Alice Silva', 'alice@siscom.gov.br', '{bcrypt}$2a$10$vI8A3N3Zdfb7.B472D0SduD5vHShyMvFfDymC1K643Z67Xm5u9V6m', TRUE, NOW(), 'a1111111-1111-1111-1111-111111111111', 'a1111111-1111-1111-1111-111111111111'), -- Gerente de TI
-('b2222222-2222-2222-2222-222222222222', 'Bruno Souza', 'bruno@siscom.gov.br', '{bcrypt}$2a$10$vI8A3N3Zdfb7.B472D0SduD5vHShyMvFfDymC1K643Z67Xm5u9V6m', TRUE, NOW(), 'a2222222-2222-2222-2222-222222222222', NULL),
-('b3333333-3333-3333-3333-333333333333', 'Carla Dias', 'carla@siscom.gov.br', '{bcrypt}$2a$10$vI8A3N3Zdfb7.B472D0SduD5vHShyMvFfDymC1K643Z67Xm5u9V6m', TRUE, NOW(), 'a3333333-3333-3333-3333-333333333333', 'a3333333-3333-3333-3333-333333333333'), -- Gerente Fin.
-('b4444444-4444-4444-4444-444444444444', 'Daniel Oliveira', 'daniel@siscom.gov.br', '{bcrypt}$2a$10$vI8A3N3Zdfb7.B472D0SduD5vHShyMvFfDymC1K643Z67Xm5u9V6m', TRUE, NOW(), 'a4444444-4444-4444-4444-444444444444', NULL),
-('b5555555-5555-5555-5555-555555555555', 'Eduarda Lima', 'eduarda@siscom.gov.br', '{bcrypt}$2a$10$vI8A3N3Zdfb7.B472D0SduD5vHShyMvFfDymC1K643Z67Xm5u9V6m', FALSE, NOW(), 'a5555555-5555-5555-5555-555555555555', NULL);
+INSERT INTO servidor_publico (id, name, email, password, phone, active, created_at, department_id, managed_department_id) VALUES
+('b1111111-1111-1111-1111-111111111111', 'Alice Silva', 'alice@siscom.gov.br', '{bcrypt}$2a$10$/rj3agJXoSvgqsUZ1F9tvubBCs6h8xEKRnmnLNgcK3Al.P7.4yBzy', '(11) 98888-1111', TRUE, NOW(), 'a1111111-1111-1111-1111-111111111111', 'a1111111-1111-1111-1111-111111111111'), -- Gerente de TI
+('b2222222-2222-2222-2222-222222222222', 'Bruno Souza', 'bruno@siscom.gov.br', '{bcrypt}$2a$10$/rj3agJXoSvgqsUZ1F9tvubBCs6h8xEKRnmnLNgcK3Al.P7.4yBzy', '(11) 98888-2222', TRUE, NOW(), 'a2222222-2222-2222-2222-222222222222', NULL),
+('b3333333-3333-3333-3333-333333333333', 'Carla Dias', 'carla@siscom.gov.br', '{bcrypt}$2a$10$/rj3agJXoSvgqsUZ1F9tvubBCs6h8xEKRnmnLNgcK3Al.P7.4yBzy', '(11) 98888-3333', TRUE, NOW(), 'a3333333-3333-3333-3333-333333333333', 'a3333333-3333-3333-3333-333333333333'), -- Gerente Fin.
+('b4444444-4444-4444-4444-444444444444', 'Daniel Oliveira', 'daniel@siscom.gov.br', '{bcrypt}$2a$10$/rj3agJXoSvgqsUZ1F9tvubBCs6h8xEKRnmnLNgcK3Al.P7.4yBzy', '(11) 98888-4444', TRUE, NOW(), 'a4444444-4444-4444-4444-444444444444', NULL),
+('b5555555-5555-5555-5555-555555555555', 'Eduarda Lima', 'eduarda@siscom.gov.br', '{bcrypt}$2a$10$/rj3agJXoSvgqsUZ1F9tvubBCs6h8xEKRnmnLNgcK3Al.P7.4yBzy', '(11) 98888-5555', FALSE, NOW(), 'a5555555-5555-5555-5555-555555555555', NULL);
 
--- Roles dos Usuários (Simulando RoleName enums comuns, ex: ROLE_USER, ROLE_ADMIN)
+-- Roles dos Usuários
 INSERT INTO user_roles (user_id, role_name) VALUES
 ('b1111111-1111-1111-1111-111111111111', 'ROLE_ADMIN'),
 ('b1111111-1111-1111-1111-111111111111', 'ROLE_USER'),
@@ -118,7 +117,6 @@ INSERT INTO user_roles (user_id, role_name) VALUES
 -- =========================================================================
 -- 3. POPULANDO CHATS
 -- =========================================================================
--- Urgências fictícias baseadas em um enum típico (ex: LOW, MEDIUM, HIGH)
 INSERT INTO chat (id, subject, urgency, requester_id, requested_department_id) VALUES
 ('c1111111-1111-1111-1111-111111111111', 'Problema com o Email Institucional', 'HIGH', 'b2222222-2222-2222-2222-222222222222', 'a1111111-1111-1111-1111-111111111111'),
 ('c2222222-2222-2222-2222-222222222222', 'Dúvida sobre Folha de Pagamento', 'MEDIUM', 'b1111111-1111-1111-1111-111111111111', 'a3333333-3333-3333-3333-333333333333'),
@@ -126,18 +124,18 @@ INSERT INTO chat (id, subject, urgency, requester_id, requested_department_id) V
 ('c4444444-4444-4444-4444-444444444444', 'Solicitação de Novo Crachá', 'LOW', 'b4444444-4444-4444-4444-444444444444', 'a2222222-2222-2222-2222-222222222222'),
 ('c5555555-5555-5555-5555-555555555555', 'Divulgação de Evento Interno', 'LOW', 'b3333333-3333-3333-3333-333333333333', 'a5555555-5555-5555-5555-555555555555');
 
--- Participantes dos Chats (Mapeando quem está na conversa)
+-- Participantes dos Chats
 INSERT INTO chat_participants (chat_id, user_id) VALUES
-('c1111111-1111-1111-1111-111111111111', 'b2222222-2222-2222-2222-222222222222'), -- Bruno (requerente)
-('c1111111-1111-1111-1111-111111111111', 'b1111111-1111-1111-1111-111111111111'), -- Alice (TI)
-('c2222222-2222-2222-2222-222222222222', 'b1111111-1111-1111-1111-111111111111'), -- Alice
-('c2222222-2222-2222-2222-222222222222', 'b3333333-3333-3333-3333-333333333333'), -- Carla (Fin)
-('c3333333-3333-3333-3333-333333333333', 'b1111111-1111-1111-1111-111111111111'), -- Alice
-('c3333333-3333-3333-3333-333333333333', 'b4444444-4444-4444-4444-444444444444'), -- Daniel (Jur)
-('c4444444-4444-4444-4444-444444444444', 'b4444444-4444-4444-4444-444444444444'), -- Daniel
-('c4444444-4444-4444-4444-444444444444', 'b2222222-2222-2222-2222-222222222222'), -- Bruno (RH)
-('c5555555-5555-5555-5555-555555555555', 'b3333333-3333-3333-3333-333333333333'), -- Carla
-('c5555555-5555-5555-5555-555555555555', 'b5555555-5555-5555-5555-555555555555'); -- Eduarda (Com)
+('c1111111-1111-1111-1111-111111111111', 'b2222222-2222-2222-2222-222222222222'),
+('c1111111-1111-1111-1111-111111111111', 'b1111111-1111-1111-1111-111111111111'),
+('c2222222-2222-2222-2222-222222222222', 'b1111111-1111-1111-1111-111111111111'),
+('c2222222-2222-2222-2222-222222222222', 'b3333333-3333-3333-3333-333333333333'),
+('c3333333-3333-3333-3333-333333333333', 'b1111111-1111-1111-1111-111111111111'),
+('c3333333-3333-3333-3333-333333333333', 'b4444444-4444-4444-4444-444444444444'),
+('c4444444-4444-4444-4444-444444444444', 'b4444444-4444-4444-4444-444444444444'),
+('c4444444-4444-4444-4444-444444444444', 'b2222222-2222-2222-2222-222222222222'),
+('c5555555-5555-5555-5555-555555555555', 'b3333333-3333-3333-3333-333333333333'),
+('c5555555-5555-5555-5555-555555555555', 'b5555555-5555-5555-5555-555555555555');
 
 -- =========================================================================
 -- 4. POPULANDO MENSAGENS
@@ -170,9 +168,3 @@ INSERT INTO meeting_participants (meeting_id, user_id) VALUES
 ('meet-00004', 'b5555555-5555-5555-5555-555555555555'),
 ('meet-00005', 'b4444444-4444-4444-4444-444444444444'),
 ('meet-00005', 'b1111111-1111-1111-1111-111111111111');
-
-SELECT password FROM servidor_publico WHERE email = 'o_email_que_voce_cadastrou';
-
-UPDATE servidor_publico 
-SET password = 'COLE_AQUI_O_HASH_QUE_DEU_CERTO'
-WHERE email IN ('alice@siscom.gov.br', 'bruno@siscom.gov.br', 'carla@siscom.gov.br', 'daniel@siscom.gov.br', 'eduarda@siscom.gov.br');

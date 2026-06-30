@@ -83,7 +83,6 @@ export class MeetingModalComponent implements OnInit {
       isAdmin: true,
       active: true,
       isManager: true,
-      createdAt: new Date(),
       chats: [],
       department: { id: 'd2', name: 'Recursos Humanos', code: 'SERH' }
     };

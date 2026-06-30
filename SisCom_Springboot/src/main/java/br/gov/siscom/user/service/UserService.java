@@ -8,6 +8,7 @@ import br.gov.siscom.user.model.dto.UserCreateDTO;
 import br.gov.siscom.user.model.dto.UserResponseDTO;
 import br.gov.siscom.user.model.dto.UserUpdateDTO;
 import br.gov.siscom.user.repository.UserRepository;
+import jakarta.transaction.Transactional;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -23,7 +24,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
-@CrossOrigin(origins = "*")
 public class UserService {
 
     private final UserRepository userRepository;
@@ -50,9 +50,9 @@ public class UserService {
         return convertToResponseDTO(user);
     }
 
-
-    public UserResponseDTO buscarPorUsername(String username){
-        User user = userRepository.findByEmail(username).orElseThrow(() -> new RuntimeException("Email não encontrado"));
+    public UserResponseDTO buscarPorUsername(String username) {
+        User user = userRepository.findByEmail(username)
+                .orElseThrow(() -> new RuntimeException("Email não encontrado"));
         return this.convertToResponseDTO(user);
     }
 
@@ -65,6 +65,7 @@ public class UserService {
         user.setEmail(dto.email());
         user.setActive(dto.active());
         user.setDepartment(dept);
+        user.setPhone(dto.phone());
 
         if (dto.managedDepartmentId() != null) {
             Department managedDept = deptRepository.findById(dto.managedDepartmentId())
@@ -96,6 +97,10 @@ public class UserService {
             user.setActive(dto.active());
         }
 
+        if (dto.phone() != null) {
+            user.setPhone(dto.phone());
+        }
+
         if (dto.departmentId() != null) {
             Department dept = deptRepository.findById(dto.departmentId())
                     .orElseThrow(() -> new RuntimeException("Departamento não encontrado"));
@@ -123,13 +128,11 @@ public class UserService {
         UUID deptId = user.getDepartment() != null ? user.getDepartment().getId() : null;
         UUID managedDeptId = user.getManagedDepartment() != null ? user.getManagedDepartment().getId() : null;
 
+        // Converte o departamento se ele existir
+        Department dept = user.getDepartment();
 
-    // Converte o departamento se ele existir
-    Department dept = user.getDepartment();
-
-    // Converte o departamento gerenciado se ele existir
-    Department managedDept = user.getManagedDepartment();   
-
+        // Converte o departamento gerenciado se ele existir
+        Department managedDept = user.getManagedDepartment();
 
         Set<String> rolesStr = user.getRoles().stream()
                 .map(role -> role.name())
@@ -138,21 +141,22 @@ public class UserService {
         Boolean isAdmin = getBoolean("ROLE_ADMIN", rolesStr);
         Boolean isManager = getBoolean("ROLE_MANAGER", rolesStr);
 
-        List<String> chatIds = user.getChats() != null ? 
-        user.getChats().stream().map(chat -> chat.getId().toString()).collect(Collectors.toList()) : List.of();
+        List<String> chatIds = user.getChats() != null
+                ? user.getChats().stream().map(chat -> chat.getId().toString()).collect(Collectors.toList())
+                : List.of();
 
         return new UserResponseDTO(
-            user.getId(),
-            user.getName(),
-            user.getUsername(),
-            user.getActive(),
-            dept,         
-            managedDept,  
-            isAdmin,
-            isManager,
-            chatIds,        
-            user.getCreatedAt()
-    );
+                user.getId(),
+                user.getName(),
+                user.getUsername(),
+                user.getActive(),
+                dept,
+                managedDept,
+                isAdmin,
+                isManager,
+                chatIds,
+                user.getPhone(),
+                user.getCreatedAt());
     }
 
     private Set<RoleName> getRoles(Boolean isAdmin, Boolean isManager) {
@@ -175,7 +179,11 @@ public class UserService {
         return roles;
     }
 
-    private Boolean getBoolean(String verification, Set<String> roles){
+    private Boolean getBoolean(String verification, Set<String> roles) {
         return roles.contains(verification);
+    }
+
+    public void deletarUser(UUID id) {
+      userRepository.deleteById(id);
     }
 }

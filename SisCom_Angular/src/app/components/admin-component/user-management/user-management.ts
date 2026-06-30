@@ -36,34 +36,42 @@ export class UserManagement {
     this.userToEdit.set(null);
   }
 
-  public gravarDados(userData: Partial<User>): void {
-    if (userData.id) {
-      this.userServ.updateUser(userData.id, userData).subscribe({
-        next: () => this.fecharModal(),
-        error: (err) => console.error('Erro ao atualizar usuário:', err)
-      });
-    } else {
+  public gravarDados(userData: Partial<User> & { password?: string }): void {
+  if (userData.id) {
+    const updatedUser = {
+      name: userData.name,
+      email: userData.email,
+      active: userData.active,
+      departmentId: userData.department?.id || null,
+      isAdmin: userData.isAdmin,
+      isManager: userData.isManager,
+      phone: userData.phone
+    };
 
-      const newUser: Omit<User, 'id'> = {
-        name: userData.name!,
-        email: userData.email!,
-        department: userData.department!,
-        isAdmin: userData.isAdmin || false,
-        isManager: userData.isManager || false,
-        active: userData.active ?? true,
-        phone: userData.phone,
-        password: 'senha-padrao-provisoria',
-        createdAt: new Date(),
-        chats: [],
-      }
+    this.userServ.updateUser(userData.id, updatedUser as any).subscribe({
+      next: () => this.fecharModal(),
+      error: (err) => console.error('Erro ao atualizar usuário:', err)
+    });
 
-      this.userServ.addUser(newUser).subscribe({
-        next: () => this.fecharModal(),
-        error: (err) => console.error('Erro ao cadastrar usuário:', err)
-      });
-    }
+  } else {
+    const newUser = {
+      name: userData.name!,
+      email: userData.email!,
+      password: userData.password || 'SenhaPadrao123',
+      active: userData.active ?? true,
+      departmentId: userData.department?.id || null,
+      managedDepartmentId: userData.isManager ? (userData.department?.id || null) : null,
+      isAdmin: userData.isAdmin || false,
+      isManager: userData.isManager || false,
+      phone: userData.phone
+    };
 
+    this.userServ.addUser(newUser as any).subscribe({
+      next: () => this.fecharModal(),
+      error: (err) => console.error('Erro ao cadastrar usuário:', err)
+    });
   }
+}
 
   removerUsuario(id: string) {
     if (confirm('Deseja remover este servidor do sistema?')) {

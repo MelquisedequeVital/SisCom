@@ -6,6 +6,7 @@ import java.util.UUID;
 import br.gov.siscom.chat.model.enums.Urgency;
 import br.gov.siscom.department.model.Department;
 import br.gov.siscom.user.model.User;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -32,7 +33,7 @@ public class Chat {
     @GeneratedValue(strategy=GenerationType.UUID)
     private UUID id;
 
-    @OneToMany(mappedBy="chat",fetch=FetchType.LAZY)
+    @OneToMany(mappedBy="chat",fetch=FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @OrderBy("timestamp ASC")
     private List<Message> messages;
 

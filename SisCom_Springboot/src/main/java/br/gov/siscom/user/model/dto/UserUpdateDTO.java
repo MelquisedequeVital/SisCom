@@ -9,5 +9,6 @@ public record UserUpdateDTO(
     UUID departmentId,
     UUID managedDepartmentId,
     Boolean isAdmin,
-    Boolean isManager
+    Boolean isManager,
+    String phone
 ) {}
