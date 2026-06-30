@@ -10,7 +10,7 @@ import { DatePipe, NgClass } from '@angular/common';
 })
 export class UserCard {
 
-  public user = input.required<User>();
+  public user = input.required<any>();
 
   public onEdit = output<User>();
   public onDelete = output<string>();
