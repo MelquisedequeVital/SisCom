@@ -20,17 +20,21 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import br.gov.siscom.audit.AuditFilter;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
     private final SecurityFilter securityFilter;
+    private final AuditFilter auditFilter;
     
     @Value("${app.cors.allowed-origins:http://localhost:4200}")
     private String allowedOrigins;
     
-    public SecurityConfig(SecurityFilter securityFilter) {
+    public SecurityConfig(SecurityFilter securityFilter, AuditFilter auditFilter) {
         this.securityFilter = securityFilter;
+        this.auditFilter = auditFilter;
     }
 
     @Bean
@@ -48,6 +52,7 @@ public class SecurityConfig {
                         .requestMatchers("/error", "/error/**").permitAll()
                         .requestMatchers("/stomp-websocket/**").permitAll()
                         .anyRequest().authenticated())
+                .addFilterAfter(auditFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
 
                 .build();
