@@ -65,7 +65,6 @@ CREATE TABLE message (
     FOREIGN KEY (chat_id) REFERENCES chat(id)
 );
 
--- Criando a tabela Meeting (Ajustada com a coluna department_id da classe Java)
 CREATE TABLE meetings (
     id VARCHAR(36) PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
@@ -76,12 +75,11 @@ CREATE TABLE meetings (
     meeting_link BOOLEAN,
     location VARCHAR(255),
     organizer_id UUID NOT NULL,
-    department_id UUID NOT NULL,
-    FOREIGN KEY (organizer_id) REFERENCES servidor_publico(id),
-    FOREIGN KEY (department_id) REFERENCES department(id)
+    department_id VARCHAR(36) NOT NULL, -- A coluna que estava faltando
+    FOREIGN KEY (organizer_id) REFERENCES servidor_publico(id)
+    --FOREIGN KEY (department_id) REFERENCES department(id) -- Vincula ao departamento
 );
 
--- Tabela de relacionamento ManyToMany de reuniões
 CREATE TABLE meeting_participants (
     meeting_id VARCHAR(36) NOT NULL,
     user_id UUID NOT NULL,
