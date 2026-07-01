@@ -9,7 +9,7 @@ import { ApiService } from './api.service';
 })
 export class MeetingService {
   private api = inject(ApiService);
-  private readonly apiUrl = 'http://localhost:8080/api/meetings';
+  private readonly apiUrl = 'http://localhost:8080/api/siscom/api/meetings';
 
   private meetingsSignal = signal<Meeting[]>([]);
   public meetings = this.meetingsSignal.asReadonly();

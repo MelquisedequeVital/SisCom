@@ -23,6 +23,9 @@ public class Meeting {
     private String title;
     private String description;
 
+    @Column(name = "department_id", nullable = false)
+    private String departmentId;
+
     @Column(name = "is_remote", nullable = false)
     private boolean isRemote;
 
@@ -42,7 +45,7 @@ public class Meeting {
     @JoinColumn(name = "organizer_id", nullable = false)
     private User organizer;
 
-    public Meeting(String id, Date endTime, Date startTime, String title, String description, List<User> participants, String location, boolean isRemote, User organizer, Boolean meetingLink) {
+    public Meeting(String id, Date endTime, Date startTime, String title, String description, List<User> participants, String location, boolean isRemote, User organizer, Boolean meetingLink, String departmentId) {
         this.id = id;
         this.endTime = endTime;
         this.startTime = startTime;
@@ -53,6 +56,7 @@ public class Meeting {
         this.isRemote = isRemote;
         this.organizer = organizer;
         this.meetingLink = meetingLink;
+        this.departmentId = departmentId;
     }
 
     public Meeting() {
@@ -145,5 +149,13 @@ public class Meeting {
 
     public void removeParticipant(String id){
         this.participants.removeIf(participant -> participant.getId().equals(id));
+    }
+
+    public String getDepartmentId() {
+        return departmentId;
+    }
+
+    public void setDepartmentId(String departmentId) {
+        this.departmentId = departmentId;
     }
 }

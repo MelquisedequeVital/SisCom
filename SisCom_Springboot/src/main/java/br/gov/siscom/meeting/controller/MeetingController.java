@@ -11,7 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/meetings")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = "http://localhost:4200")
 public class MeetingController {
 
     @Autowired
@@ -46,5 +46,10 @@ public class MeetingController {
         }
         meetingService.deletar(id);
         return ResponseEntity.noContent().build();
+    }
+    @PutMapping("/{id}")
+    public ResponseEntity<Meeting> update(@PathVariable String id, @RequestBody Meeting meeting) {
+        Meeting atualizada = meetingService.atualizar(id, meeting);
+        return ResponseEntity.ok(atualizada);
     }
 }

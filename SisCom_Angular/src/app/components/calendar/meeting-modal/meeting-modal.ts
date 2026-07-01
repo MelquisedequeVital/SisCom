@@ -37,7 +37,6 @@ export class MeetingModalComponent implements OnInit {
     
     const existingMeeting = this.meetingData();
 
-    // 🌟 SE A REUNIÃO JÁ EXISTIR: Carrega os dados dela no formulário para liberar a exclusão/edição
     if (existingMeeting) {
       const startIso = new Date(existingMeeting.startTime).toISOString().substring(0, 16);
       const endIso = new Date(existingMeeting.endTime).toISOString().substring(0, 16);
@@ -87,13 +86,18 @@ export class MeetingModalComponent implements OnInit {
       department: { id: 'd2', name: 'Recursos Humanos', code: 'SERH' }
     };
 
+    const cleanedOrganizer: User = {
+      ...defaultOrganizer,
+      chats: [],
+    };
+    
     const newMeeting = {
       title: this.meetingForm.value.title!,
       departmentId: this.meetingForm.value.departmentId!,
       startTime: new Date(this.meetingForm.value.startTime!),
       endTime: new Date(this.meetingForm.value.endTime!),
       isRemote: this.meetingForm.value.isRemote ?? false,
-      organizer: defaultOrganizer, 
+      organizer: cleanedOrganizer, 
       participants: [] as User[], 
       meetingLink: this.meetingForm.value.isRemote ?? false
     };
@@ -103,9 +107,9 @@ export class MeetingModalComponent implements OnInit {
         this.meetingService.loadMeetings(); // Garante o recarregamento imediato
         this.closeModal.emit();
       },
-      error: () => {
-        this.meetingService.loadMeetings(); 
-        this.closeModal.emit();
+      error: (err) => {
+        console.error('Erro ao agendar reunião via API:', err);
+        alert('Ocorreu um erro ao agendar a reunião. Por favor, tente novamente.');
       }
     });
   }
@@ -126,8 +130,6 @@ export class MeetingModalComponent implements OnInit {
         },
         error: (err) => {
           console.error('Erro ao deletar reunião via API:', err);
-          this.meetingService.loadMeetings(); 
-          this.closeModal.emit();
         }
       });
     }
