@@ -1,33 +1,36 @@
 package br.gov.siscom.meeting.service;
 
-import br.gov.siscom.meeting.model.Meeting;
-import br.gov.siscom.meeting.repository.MeetingRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional; // 🌟 Importado
-
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors; 
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import br.gov.siscom.meeting.dto.MeetingResponseDTO; 
+import br.gov.siscom.meeting.dto.OrganizerDTO;
+import br.gov.siscom.meeting.model.Meeting;
+import br.gov.siscom.meeting.repository.MeetingRepository;
 
 @Service
 public class MeetingService {
+
     @Autowired
     private MeetingRepository meetingRepository;
 
-    @Transactional // 🌟 Garante atomicidade e persistência correta no banco
-    public Meeting salvar(Meeting meeting) {
+    @Transactional 
+    public MeetingResponseDTO salvar(Meeting meeting) { 
         validarDatas(meeting);
-        return meetingRepository.save(meeting);
+        Meeting novaMeeting = meetingRepository.save(meeting);
+        return convertToDTO(novaMeeting);
     }
 
-    // 🌟 NOVO MÉTODO: Use este método no seu Controller para requisições PUT (Atualizar)
     @Transactional
-    public Meeting atualizar(String id, Meeting dadosAtualizados) {
+    public MeetingResponseDTO atualizar(String id, Meeting dadosAtualizados) { 
         validarDatas(dadosAtualizados);
 
-        // 1. Busca a reunião que já existe no banco pelo ID correto
         return meetingRepository.findById(id).map(meetingExistente -> {
-            // 2. Atualiza os campos mantendo o mesmo ID do banco
             meetingExistente.setTitle(dadosAtualizados.getTitle());
             meetingExistente.setDescription(dadosAtualizados.getDescription());
             meetingExistente.setStartTime(dadosAtualizados.getStartTime());
@@ -39,17 +42,20 @@ public class MeetingService {
             meetingExistente.setParticipants(dadosAtualizados.getParticipants());
             meetingExistente.setDepartmentId(dadosAtualizados.getDepartmentId());
 
-            // 3. Salva a entidade existente modificada (Gera o UPDATE no banco)
-            return meetingRepository.save(meetingExistente);
+            Meeting atualizada = meetingRepository.save(meetingExistente);
+            return convertToDTO(atualizada);
         }).orElseThrow(() -> new IllegalArgumentException("Reunião com ID " + id + " não encontrada."));
     }
 
-    public List<Meeting> listarTodas() {
-        return meetingRepository.findAll();
+    public List<MeetingResponseDTO> listarTodas() {
+        return meetingRepository.findAll().stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
     }
 
-    public Optional<Meeting> buscarPeloId(String id) {
-        return meetingRepository.findById(id);
+    public Optional<MeetingResponseDTO> buscarPeloId(String id) {
+        return meetingRepository.findById(id)
+                .map(this::convertToDTO);
     }
 
     @Transactional
@@ -57,7 +63,35 @@ public class MeetingService {
         meetingRepository.deleteById(id);
     }
 
-    // Isola a validação para evitar repetição de código
+    // Método de conversão interna para evitar referências circulares
+    private MeetingResponseDTO convertToDTO(Meeting meeting) {
+        OrganizerDTO organizerDTO = null;
+        if (meeting.getOrganizer() != null) {
+            organizerDTO = new OrganizerDTO(
+                meeting.getOrganizer().getId(),
+                meeting.getOrganizer().getName(),
+                meeting.getOrganizer().getEmail()
+            );
+        }
+
+       String linkStr = "";
+        if (meeting.getMeetingLink() != null) {
+            linkStr = String.valueOf(meeting.getMeetingLink());
+        }
+
+        return new MeetingResponseDTO(
+            meeting.getId(),
+            meeting.getTitle(),
+            meeting.getDescription(),
+            meeting.getStartTime(),
+            meeting.getEndTime(),
+            meeting.isRemote(),
+            linkStr,
+            meeting.getLocation(),
+            organizerDTO,
+            meeting.getDepartmentId()
+        );
+    }
     private void validarDatas(Meeting meeting) {
         if (meeting.getEndTime() != null && meeting.getStartTime() != null && 
             meeting.getEndTime().before(meeting.getStartTime())) {
