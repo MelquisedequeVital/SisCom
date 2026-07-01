@@ -48,6 +48,7 @@ public class SecurityConfig {
                         .requestMatchers("/departments/public-list").permitAll()
                         .requestMatchers("/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/users").permitAll()
+                        .requestMatchers("/api/meetings/**").permitAll()
                         .requestMatchers(HttpMethod.DELETE, "/users/**").hasRole("ADMIN")
                         .requestMatchers("/error", "/error/**").permitAll()
                         .requestMatchers("/stomp-websocket/**").permitAll()
