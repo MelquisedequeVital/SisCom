@@ -1,5 +1,6 @@
 package br.gov.siscom.meeting.controller;
 
+import br.gov.siscom.meeting.dto.MeetingResponseDTO;
 import br.gov.siscom.meeting.model.Meeting;
 import br.gov.siscom.meeting.service.MeetingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +19,12 @@ public class MeetingController {
     private MeetingService meetingService;
 
     @GetMapping
-    public ResponseEntity<List<Meeting>> getAll() {
+    public ResponseEntity<List<MeetingResponseDTO>> getAll() { 
         return ResponseEntity.ok(meetingService.listarTodas());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Meeting> getById(@PathVariable String id) {
+    public ResponseEntity<MeetingResponseDTO> getById(@PathVariable String id) { 
         return meetingService.buscarPeloId(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
@@ -32,7 +33,7 @@ public class MeetingController {
     @PostMapping
     public ResponseEntity<?> create(@RequestBody Meeting meeting) {
         try {
-            Meeting novaReuniao = meetingService.salvar(meeting);
+            MeetingResponseDTO novaReuniao = meetingService.salvar(meeting); 
             return ResponseEntity.status(HttpStatus.CREATED).body(novaReuniao);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -47,9 +48,10 @@ public class MeetingController {
         meetingService.deletar(id);
         return ResponseEntity.noContent().build();
     }
+
     @PutMapping("/{id}")
-    public ResponseEntity<Meeting> update(@PathVariable String id, @RequestBody Meeting meeting) {
-        Meeting atualizada = meetingService.atualizar(id, meeting);
+    public ResponseEntity<MeetingResponseDTO> update(@PathVariable String id, @RequestBody Meeting meeting) { 
+        MeetingResponseDTO atualizada = meetingService.atualizar(id, meeting); 
         return ResponseEntity.ok(atualizada);
     }
 }
