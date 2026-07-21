@@ -60,7 +60,7 @@ export class ActiveChatComponent implements OnDestroy {
     this.desconectarWebsocket();
 
     this.stompClient = new Client({
-      brokerURL: 'ws://localhost:8080/api/siscom/stomp-websocket',
+      brokerURL: 'ws://siscom-backend.onrender.com/api/siscom/stomp-websocket',
       debug: (str) => console.log(str),
       reconnectDelay: 5000,
       onConnect: () => {
