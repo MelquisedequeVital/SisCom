@@ -5,6 +5,7 @@ import { Chat } from '../../../models/chat.model';
 import { AuthService } from '../../../services/auth.service';
 import { Router } from '@angular/router';
 import { Client, StompSubscription } from '@stomp/stompjs';
+import { environment } from '../../../../environments/enviroment';
 
 @Component({
   selector: 'app-active-chat',
@@ -60,7 +61,7 @@ export class ActiveChatComponent implements OnDestroy {
     this.desconectarWebsocket();
 
     this.stompClient = new Client({
-      brokerURL: 'ws://siscom-backend.onrender.com/api/siscom/stomp-websocket',
+      brokerURL: `wss://${environment.apiUrl}/stomp-websocket`,
       debug: (str) => console.log(str),
       reconnectDelay: 5000,
       onConnect: () => {
