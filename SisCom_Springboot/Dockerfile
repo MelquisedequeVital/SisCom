@@ -28,5 +28,8 @@ WORKDIR /app
 # Copia o .jar gerado na Etapa 1
 COPY --from=build /app/target/*.jar app.jar
 
-# Inicializa o Spring Boot ajustando a porta dinâmica do Render ($PORT) e controle de memória JVM
-ENTRYPOINT ["sh", "-c", "java -XX:MaxRAMPercentage=75.0 -Dserver.port=${PORT:-8080} -jar app.jar"]
+# O Render define a variável PORT dinamicamente, mas expomos a porta padrão por documentação
+EXPOSE 8080
+
+# Comando para rodar a aplicação
+ENTRYPOINT ["java", "-jar", "app.jar"]
