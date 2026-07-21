@@ -1,0 +1,13 @@
+# Pastas de compilação local
+target/
+
+# Logs e arquivos temporários
+*.log
+.mvn/timing.properties
+
+# Arquivos do sistema e IDEs
+.classpath
+.project
+.settings/
+.idea/
+*.iml
