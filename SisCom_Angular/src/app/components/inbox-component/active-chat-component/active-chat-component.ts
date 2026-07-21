@@ -61,7 +61,7 @@ export class ActiveChatComponent implements OnDestroy {
     this.desconectarWebsocket();
 
     this.stompClient = new Client({
-      brokerURL: `wss://${environment.apiUrl}/stomp-websocket`,
+      brokerURL: environment.websocketUrl,
       debug: (str) => console.log(str),
       reconnectDelay: 5000,
       onConnect: () => {
