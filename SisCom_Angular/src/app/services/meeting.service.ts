@@ -3,13 +3,14 @@ import { Meeting } from '../models/meeting.model';
 import { catchError, Observable, of, throwError } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { ApiService } from './api.service';
+import { environment } from '../../environments/enviroment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class MeetingService {
   private api = inject(ApiService);
-  private readonly apiUrl = 'http://localhost:8080/api/siscom/api/meetings';
+  private readonly apiUrl = environment.apiUrl + '/meetings';
 
   private meetingsSignal = signal<Meeting[]>([]);
   public meetings = this.meetingsSignal.asReadonly();

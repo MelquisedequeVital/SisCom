@@ -2,6 +2,7 @@ import { HttpClient } from "@angular/common/http";
 import { inject, Injectable, signal } from "@angular/core";
 import { Observable, tap, map } from "rxjs";
 import { User } from "../models/user.model";
+import { environment } from "../../environments/enviroment";
 
 interface LoginResponse {
   token: string;
@@ -11,7 +12,7 @@ interface LoginResponse {
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8080/api/siscom';
+  private apiUrl = environment.apiUrl;
   
   public currentUserSignal = signal<User | null>(this.getUserFromStorage());
   public currentUser = this.currentUserSignal.asReadonly();

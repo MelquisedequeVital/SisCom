@@ -3,13 +3,14 @@ import { User } from '../models/user.model';
 import { catchError, Observable, of, throwError } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { ApiService } from './api.service';
+import { environment } from '../../environments/enviroment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
   private api = inject(ApiService);
-  private readonly apiUrl = 'http://localhost:8080/api/siscom/users';
+  private readonly apiUrl = environment.apiUrl + '/users';
 
   private usersSignal = signal<User[]>([]);
   public users = this.usersSignal.asReadonly();

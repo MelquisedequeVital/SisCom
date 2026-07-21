@@ -5,6 +5,7 @@ import { catchError, tap } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { UserService } from './user.service';
 import { Client } from '@stomp/stompjs'; // <-- Importação do STOMP
+import { environment } from '../../environments/enviroment';
 
 @Injectable({
   providedIn: 'root',
@@ -12,7 +13,7 @@ import { Client } from '@stomp/stompjs'; // <-- Importação do STOMP
 export class ChatService {
   private api = inject(ApiService);
   private userServ = inject(UserService);
-  private readonly apiUrl = 'http://localhost:8080/api/siscom/chat';
+  private readonly apiUrl = environment.apiUrl + '/chat';
 
   private chatsSignal = signal<Chat[]>([]);
   public chats = this.chatsSignal.asReadonly();

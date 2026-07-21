@@ -3,6 +3,7 @@ import { Department } from '../models/department.model';
 import { Observable, of, throwError } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 import { ApiService } from './api.service';
+import { environment } from '../../environments/enviroment';
 
 @Injectable({
   providedIn: 'root',
@@ -10,7 +11,7 @@ import { ApiService } from './api.service';
 export class DepartmentService {
   private api = inject(ApiService);
   // Mantém a URL base centralizada
-  private readonly API_URL = 'http://localhost:8080/api/siscom/departments';
+  private readonly API_URL = environment.apiUrl + '/departments';
 
   private departmentsSignal = signal<Department[]>([]);
   public departments = this.departmentsSignal.asReadonly();
